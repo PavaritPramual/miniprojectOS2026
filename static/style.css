@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Tavily Design Tokens */
+  --color-background: #fefcf5;
+  --color-white: #fffcf6;
+  --color-white-tint: #eaeae2;
+  --color-light-gray: #f7f7f5;
+  --color-black: #3c3a39;
+
+  --color-black-rgb: 11, 9, 7;
+  --color-black-80: rgba(11, 9, 7, 0.8);
+  --color-black-60: rgba(11, 9, 7, 0.6);
+  --color-black-40: rgba(11, 9, 7, 0.4);
+  --color-black-20: rgba(11, 9, 7, 0.2);
+  --color-black-10: rgba(11, 9, 7, 0.1);
+  --color-black-5: rgba(11, 9, 7, 0.05);
+
+  --color-primary-red: #ff272d;
+  --color-orange: #ff7300;
+  --color-yellow: #ffc753;
+  --color-primary-yellow: #fdc211;
+  --color-pink: #f49eff;
+  --color-lav: #817fff;
+  --color-primary-blue: #2677ff;
+  --color-light-blue: #aaf2fc;
+  --color-turquoise: #79deeb;
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-black);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Hairline Tavily Card */
+.tavily-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-black-10);
+  border-radius: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.tavily-card:hover {
+  border-color: var(--color-black-20);
+}
+
+/* Eyebrow Label (/slash prefix) */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-black-60);
+  letter-spacing: -0.2px;
+}
+
+/* Signature Dark Pill Button */
+.btn-dark-pill {
+  background-color: var(--color-black);
+  color: #fefefe;
+  border: none;
+  border-radius: 40px;
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn-dark-pill:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-dark-pill:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Outlined Pill */
+.btn-outlined-pill {
+  background-color: transparent;
+  color: var(--color-black);
+  border: 1px solid var(--color-black-20);
+  border-radius: 40px;
+  padding: 6px 14px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.btn-outlined-pill:hover {
+  background-color: var(--color-white-tint);
+  border-color: var(--color-black-40);
+}
+
+/* TreeSize Directory Tree Item */
+.tree-node-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+  transition: background-color 0.1s ease;
+}
+
+.tree-node-row:hover {
+  background-color: rgba(11, 9, 7, 0.04);
+}
+
+.tree-node-row.selected {
+  background-color: #eaeae2;
+  font-weight: 600;
+  color: #0b0907;
+}
+
+/* Mini percentage bar inside tree & table */
+.bar-track {
+  background-color: rgba(11, 9, 7, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  height: 6px;
+}
+
+.bar-fill {
+  background-color: var(--color-primary-blue);
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-white-tint);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(11, 9, 7, 0.2);
+}
