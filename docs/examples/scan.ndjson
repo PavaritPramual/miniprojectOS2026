@@ -1,0 +1,6 @@
+{"type":"entry","relativePath":"","parentRelativePath":null,"name":"demo","kind":"directory","logicalBytes":0}
+{"type":"entry","relativePath":"docs","parentRelativePath":"","name":"docs","kind":"directory","logicalBytes":0}
+{"type":"entry","relativePath":"docs/รายงาน 1.txt","parentRelativePath":"docs","name":"รายงาน 1.txt","kind":"file","logicalBytes":12}
+{"type":"entry","relativePath":"shortcut","parentRelativePath":"","name":"shortcut","kind":"link","logicalBytes":0}
+{"type":"skipped","relativePath":"shortcut","reason":"symbolic_link"}
+{"type":"done","fileCount":1,"directoryCount":2,"errorCount":0,"skippedCount":1,"complete":false}

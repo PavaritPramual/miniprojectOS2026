@@ -1,0 +1,619 @@
+{
+  "note": "MOCK DATA ONLY - not a measured scan",
+  "startScan": {
+    "id": "scan-demo-001",
+    "state": "queued"
+  },
+  "statusRunning": {
+    "id": "scan-demo-001",
+    "rootPath": "D:\\demo",
+    "state": "running",
+    "fileCount": 17,
+    "directoryCount": 2,
+    "errorCount": 0,
+    "skippedCount": 0,
+    "elapsedSeconds": 1.1,
+    "partial": false
+  },
+  "statusCompleted": {
+    "id": "scan-demo-001",
+    "rootPath": "D:\\demo",
+    "state": "completed",
+    "fileCount": 60,
+    "directoryCount": 2,
+    "errorCount": 0,
+    "skippedCount": 0,
+    "elapsedSeconds": 2.4,
+    "partial": false
+  },
+  "rootPage1": {
+    "scanId": "scan-demo-001",
+    "parent": "",
+    "offset": 0,
+    "limit": 50,
+    "totalChildren": 60,
+    "hasMore": true,
+    "partial": false,
+    "items": [
+      {
+        "relativePath": "docs",
+        "name": "docs",
+        "kind": "directory",
+        "logicalBytes": 12,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "file-001.bin",
+        "name": "file-001.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-002.bin",
+        "name": "file-002.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-003.bin",
+        "name": "file-003.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-004.bin",
+        "name": "file-004.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-005.bin",
+        "name": "file-005.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-006.bin",
+        "name": "file-006.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-007.bin",
+        "name": "file-007.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-008.bin",
+        "name": "file-008.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-009.bin",
+        "name": "file-009.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-010.bin",
+        "name": "file-010.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-011.bin",
+        "name": "file-011.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-012.bin",
+        "name": "file-012.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-013.bin",
+        "name": "file-013.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-014.bin",
+        "name": "file-014.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-015.bin",
+        "name": "file-015.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-016.bin",
+        "name": "file-016.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-017.bin",
+        "name": "file-017.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-018.bin",
+        "name": "file-018.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-019.bin",
+        "name": "file-019.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-020.bin",
+        "name": "file-020.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-021.bin",
+        "name": "file-021.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-022.bin",
+        "name": "file-022.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-023.bin",
+        "name": "file-023.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-024.bin",
+        "name": "file-024.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-025.bin",
+        "name": "file-025.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-026.bin",
+        "name": "file-026.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-027.bin",
+        "name": "file-027.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-028.bin",
+        "name": "file-028.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-029.bin",
+        "name": "file-029.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-030.bin",
+        "name": "file-030.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-031.bin",
+        "name": "file-031.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-032.bin",
+        "name": "file-032.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-033.bin",
+        "name": "file-033.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-034.bin",
+        "name": "file-034.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-035.bin",
+        "name": "file-035.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-036.bin",
+        "name": "file-036.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-037.bin",
+        "name": "file-037.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-038.bin",
+        "name": "file-038.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-039.bin",
+        "name": "file-039.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-040.bin",
+        "name": "file-040.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-041.bin",
+        "name": "file-041.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-042.bin",
+        "name": "file-042.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-043.bin",
+        "name": "file-043.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-044.bin",
+        "name": "file-044.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-045.bin",
+        "name": "file-045.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-046.bin",
+        "name": "file-046.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-047.bin",
+        "name": "file-047.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-048.bin",
+        "name": "file-048.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-049.bin",
+        "name": "file-049.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  },
+  "rootPage2": {
+    "scanId": "scan-demo-001",
+    "parent": "",
+    "offset": 50,
+    "limit": 50,
+    "totalChildren": 60,
+    "hasMore": false,
+    "partial": false,
+    "items": [
+      {
+        "relativePath": "file-050.bin",
+        "name": "file-050.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-051.bin",
+        "name": "file-051.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-052.bin",
+        "name": "file-052.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-053.bin",
+        "name": "file-053.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-054.bin",
+        "name": "file-054.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-055.bin",
+        "name": "file-055.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-056.bin",
+        "name": "file-056.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-057.bin",
+        "name": "file-057.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-058.bin",
+        "name": "file-058.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "file-059.bin",
+        "name": "file-059.bin",
+        "kind": "file",
+        "logicalBytes": 1,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  },
+  "docsChildren": {
+    "scanId": "scan-demo-001",
+    "parent": "docs",
+    "offset": 0,
+    "limit": 50,
+    "totalChildren": 1,
+    "hasMore": false,
+    "partial": false,
+    "items": [
+      {
+        "relativePath": "docs/รายงาน 1.txt",
+        "name": "รายงาน 1.txt",
+        "kind": "file",
+        "logicalBytes": 12,
+        "allocatedBytes": 4096,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  },
+  "cancelResponse": {
+    "id": "scan-demo-001",
+    "state": "cancelling"
+  },
+  "errorExample": {
+    "code": "SCAN_NOT_FOUND",
+    "detail": "ไม่พบงานสแกน"
+  }
+}

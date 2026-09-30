@@ -44,6 +44,9 @@ main.py                  HTTP server ต้นแบบ
 
 - [SPEC.md](docs/SPEC.md) — ขอบเขต สัญญาข้อมูล API ตัวเลข และเกณฑ์รับงาน
 - [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) — งานของสมาชิก 3 คน กำหนดส่งและหลักฐาน
+- [ONE_DAY_PLAN.md](docs/ONE_DAY_PLAN.md) — ตารางทำงานวันเดียว ลำดับส่งต่อและจุดตรวจร่วม
+- [CONTRACT.md](docs/CONTRACT.md) — ฟิลด์ข้อมูลและตัวอย่าง API/NDJSON ที่ล็อกให้เริ่มทำได้ทันที
+- [prepare_demo_fixture.ps1](tools/prepare_demo_fixture.ps1) — สร้างโฟลเดอร์ทดสอบ 64 ไฟล์และ 13 โฟลเดอร์แบบไม่ทับข้อมูลเดิม
 - [PRESENTATION_PLAN.md](docs/PRESENTATION_PLAN.md) — สไลด์ 7 หน้า เดโม และหัวข้อรายงาน
 - [DESIGN.md](docs/DESIGN.md) — อ้างอิงภาพลักษณ์เว็บ (ไม่ใช่หลักฐานฟีเจอร์)
 - [CHANGELOG.md](docs/CHANGELOG.md) — ประวัติต้นแบบและสถานะงาน

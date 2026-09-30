@@ -3,7 +3,7 @@
 **สถานะ:** สเปกสำหรับพัฒนาต่อ ยังไม่ใช่คำรับรองว่าโค้ดทำได้ครบ<br>
 **เจ้าของการตัดสินใจ:** สมาชิกทั้ง 3 คน<br>
 **วันนำเสนอที่ยืนยันแล้ว:** 9 ต.ค. 2569 เวลา 13:00 น. (5–10 นาที)<br>
-**เอกสารประกอบ:** [แผนงาน](PROJECT_PLAN.md) · [แผนนำเสนอ](PRESENTATION_PLAN.md) · [คู่มือหน้าแรก](../README.md)
+**เอกสารประกอบ:** [สัญญาข้อมูล](CONTRACT.md) · [แผนงาน](PROJECT_PLAN.md) · [แผนนำเสนอ](PRESENTATION_PLAN.md) · [คู่มือหน้าแรก](../README.md)
 
 ## 1. เป้าหมายและขอบเขต
 
@@ -64,7 +64,7 @@ Record `entry` ของ root มี `relativePath=""`; path ย่อยใช�
 | --- | --- |
 | `GET /api/drives` | รายชื่อ local fixed drives, total/free, และ path Windows; ระบุ error หากอ่านไม่ได้ |
 | `POST /api/scans` | รับ `{ "path": "C:\\..." }` หรือ root ไดรฟ์; ตรวจว่าเป็น local path จริง; คืน `202 { "id": "...", "state": "queued" }`; หากมีสแกนทั้งไดรฟ์กำลังทำอยู่คืน `409` |
-| `GET /api/scans/{id}` | `state` = queued/running/completed/partial/cancelled/failed, counts, elapsed time, error/skipped count; ขณะสแกนยังไม่แสดงเปอร์เซ็นต์ที่ไม่ทราบตัวหาร |
+| `GET /api/scans/{id}` | `state` = queued/running/cancelling/completed/partial/cancelled/failed, counts, elapsed time, error/skipped count; ขณะสแกนยังไม่แสดงเปอร์เซ็นต์ที่ไม่ทราบตัวหาร |
 | `GET /api/scans/{id}/children?parent=<relativePath>&offset=0&limit=50` | ลูกของโฟลเดอร์ที่สแกนแล้ว, `totalChildren`, `hasMore`, `partial`; จำกัด `limit` ไม่เกิน 50 และไม่ส่ง tree ทั้งก้อน |
 | `POST /api/scans/{id}/cancel` | ขอหยุด process, เก็บสถานะ cancelled และผลบางส่วนให้ตรวจได้ |
 | `POST /api/reveal` | เปิด Explorer เฉพาะ path ที่อยู่ในผลสแกน; คืนสถานะสำเร็จหรือข้อผิดพลาดจริง |
