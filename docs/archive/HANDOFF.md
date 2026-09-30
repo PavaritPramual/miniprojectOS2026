@@ -1,4 +1,6 @@
 # 📋 เอกสารส่งมอบงานโครงการ (Project Handoff Document)
+
+> **เอกสารเก็บประวัติต้นแบบ:** ไฟล์นี้บรรยายระบบ Python/Win32 เดิมและมีข้อกล่าวอ้างด้านความเร็ว/ความแม่นยำที่ยังไม่ได้ยืนยัน ไม่ใช่สเปกหรือสถานะเวอร์ชันส่งงาน ให้ใช้ [SPEC ปัจจุบัน](../SPEC.md), [แผนพัฒนา](../PROJECT_PLAN.md) และผลทดสอบจริงแทน
 # โครงการ: CoreSpace — High-Performance OS Storage Analyzer
 
 > **วิชา:** Operating Systems (Mini-Project)  
@@ -70,14 +72,18 @@ D:\673380278-9\2569\OS\project\
 ├── tools/                             # สคริปต์เครื่องมือเสริม
 │   └── benchmark.py                   # CLI Benchmark เปรียบเทียบความเร็วผ่าน Terminal
 ├── main.py                            # Entry Point หลัก: รัน HTTP Server และเปิดเบราว์เซอร์
-├── README.md                          # เอกสารแนะนำโครงการ คู่มือการใช้งานระบบ
-├── CHANGELOG.md                       # ประวัติการพัฒนาและแผนงานฟีเจอร์ในอนาคต (Roadmap)
-├── OS_CONCEPTS_EXPLAINED.md           # คู่มืออธิบายมโนทัศน์ OS ฉบับเข้าใจง่าย + Glossary
-├── STUDY_GUIDE.md                     # สรุปประเด็นสำหรับเตรียมตอบคำถามอาจารย์
-├── DESIGN.md                          # คู่มือข้อกำหนด Design System สไตล์ Tavily
-├── HANDOFF.md                         # เอกสารส่งมอบงานฉบับนี้
-├── .gitignore                         # ตัวกรองไฟล์แคชและไฟล์ที่ไม่เกี่ยวข้อง
-└── Emailing Abraham-Silberschatz...   # ตำราเรียนหลัก Operating System Concepts 10th Ed. (PDF)
+├── README.md                          # หน้าเริ่มต้นของ repository
+├── docs/                              # สเปก แผน และเอกสารประกอบ
+│   ├── SPEC.md                        # ข้อกำหนดเวอร์ชันส่งงาน
+│   ├── PROJECT_PLAN.md                # แผนงานทีม
+│   ├── PRESENTATION_PLAN.md           # แผนนำเสนอ
+│   ├── CHANGELOG.md                   # ประวัติ/สถานะ
+│   ├── OS_CONCEPTS_EXPLAINED.md       # เอกสารศึกษา
+│   ├── STUDY_GUIDE.md                 # คู่มือศึกษา
+│   ├── DESIGN.md                      # อ้างอิงภาพลักษณ์
+│   ├── archive/HANDOFF.md             # เอกสารเก็บประวัติฉบับนี้
+│   └── reference/Emailing Abraham-Silberschatz...pdf # สำเนาตำราในเครื่อง (Git ignore)
+└── .gitignore                         # ตัวกรองไฟล์แคชและไฟล์ที่ไม่เกี่ยวข้อง
 ```
 
 ---
@@ -122,18 +128,6 @@ python tools/benchmark.py C:\Users
 | **Chapter 14: File-System Implementation** | Allocation Methods & Internal Fragmentation | คำนวณ Cluster Allocation (4,096 B) และ Slack Space บนระบบไฟล์ NTFS |
 | **Chapter 14: Inodes / Indexed Allocation** | Resident Metadata Storage | คำนวณขนาด NTFS Resident Files ($\le 600$B) ให้มี Physical On-Disk Size = 0 Bytes |
 
-### 5.1 ตารางเทียบเคียง POSIX System Calls กับ Windows Win32 API
-
-| มาตรฐาน POSIX System Calls (Unix/Linux) | คำสั่ง Win32 API บน Windows (CoreSpace) | ความหมายและกลไกใน OS |
-| :--- | :--- | :--- |
-| `opendir()`, `readdir()`, `closedir()` | `FindFirstFileExW()`, `FindNextFileW()` | System Call ข้ามไปขอข้อมูล Directory Entries จากเคอร์เนล |
-| `lstat() -> st_size` | `(nFileSizeHigh << 32) \| nFileSizeLow` | ดึงขนาดของเนื้อไฟล์จริง (End of File) |
-| `lstat() -> st_blocks * 512` | `Cluster Size * ceil(Size / Cluster Size)` | คำนวณการจัดสรรบล็อกคลัสเตอร์จริงบนฟิสิคัลดิสก์ |
-| `statvfs() -> f_blocks, f_bavail` | `GetDiskFreeSpaceExW()`, `GetDiskFreeSpaceW()` | ตรวจวัดความจุและพื้นที่ว่างระดับ Filesystem Geometry |
-| `S_ISLNK(st_mode)` | `FILE_ATTRIBUTE_REPARSE_POINT (0x400)` | ป้องกัน Infinite Recursion Loop จากกราฟวงวน |
-| `pthread_create()`, `pthread_join()` | Producer-Consumer Worker Queue (Multi-threading) | ส่ง I/O คู่ขนานเพื่อผลักดัน Queue Depth ($QD > 1$) บน SSD |
-
-
 ---
 
 ## 6. ประวัติการตัดสินใจและการปรับแก้ (Decision History)
@@ -150,11 +144,11 @@ python tools/benchmark.py C:\Users
 
 ### สำหรับเตรียมนำเสนอในชั้นเรียน (เดดไลน์ 9 ต.ค. 2569)
 1. **จัดทำสไลด์นำเสนอ (Presentation Files):**
-   - นำแผนภาพสถาปัตยกรรมและตารางเปรียบเทียบใน `HANDOFF.md` และ `README.md` ไปใส่ในสไลด์ 7–8 หน้า
+   - ใช้ [PRESENTATION_PLAN.md](../PRESENTATION_PLAN.md) เป็นแผนสไลด์ปัจจุบัน; เนื้อหาในไฟล์นี้เป็นภาพต้นแบบที่ต้องตรวจเทียบกับโค้ดก่อนใช้
 2. **อัดคลิปวิดีโอสาธิต (Demo Video 2–3 นาที):**
    - สาธิตการเปิดแอป $\rightarrow$ เลือก Drive $\rightarrow$ สแกน $\rightarrow$ ชี้ให้เห็น Slack Space $\rightarrow$ กาง Directory Tree $\rightarrow$ กดปุ่ม Reveal เพื่อเปิด Explorer
 3. **ซักซ้อมการตอบคำถาม (Code Defense):**
-   - สมาชิกทั้ง 3 คนควรอ่านทบทวนไฟล์ [`OS_CONCEPTS_EXPLAINED.md`](file:///D:/673380278-9/2569/OS/project/OS_CONCEPTS_EXPLAINED.md) เพื่อทำความเข้าใจคำศัพท์และกลไกของ OS ก่อนวันขึ้นบรรยาย
+   - สมาชิกทั้ง 3 คนควรอ่าน [OS_CONCEPTS_EXPLAINED.md](../OS_CONCEPTS_EXPLAINED.md) เพื่อทบทวนคำศัพท์ แล้วใช้ผลทดสอบจริงตอบคำถามเกี่ยวกับโค้ด
 
 ### สำหรับการพัฒนาฟีเจอร์ในอนาคต (Future Enhancements)
 - **v1.1.0:** เพิ่มระบบ Search และ Filter กรองนามสกุลไฟล์ (.mp4, .pdf, .zip) ในตาราง

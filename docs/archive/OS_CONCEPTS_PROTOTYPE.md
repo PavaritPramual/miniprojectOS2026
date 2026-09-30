@@ -1,8 +1,12 @@
 # 📖 คู่มือวิศวกรรมระบบปฏิบัติการ: มโนทัศน์ สถาปัตยกรรม และคำศัพท์เทคนิค
+
+> **เก็บประวัติ:** สำเนาบันทึกศึกษาของต้นแบบก่อนจัดทำฉบับส่งงาน มีสมมติฐานและข้อกล่าวอ้างที่ยังไม่ได้พิสูจน์ ใช้ [ฉบับปัจจุบัน](../OS_CONCEPTS_EXPLAINED.md) สำหรับนำเสนอ
+
+> **สถานะ:** บันทึกศึกษาและคำอธิบายของต้นแบบ Python/Win32 ไม่ใช่ผลทดสอบหรือสเปกส่งงาน ตัวเลขตัวอย่างเรื่อง cluster, resident file, queue depth และความเร็วเป็นกรณีอธิบาย ไม่ใช่ค่าที่ CoreSpace วัดได้จริง โปรดใช้ [SPEC.md](../SPEC.md) และผลทดสอบบนเครื่องเดโมเมื่อทำสไลด์/รายงาน
 ### สำหรับโครงการพัฒนา CoreSpace (Disk Space Analyzer)
 
 > **อ้างอิงตำราหลัก:** *Operating System Concepts (10th Edition)* โดย Abraham Silberschatz, Peter B. Galvin, Greg Gagne  
-> (ไฟล์ PDF ในโปรเจกต์: `Emailing Abraham-Silberschatz-Operating-System-Concepts-10th-2018 (1).pdf`)
+> (สำเนา PDF ในเครื่อง: `../reference/Emailing Abraham-Silberschatz-Operating-System-Concepts-10th-2018 (1).pdf`; Git ignore)
 
 ---
 
@@ -12,15 +16,15 @@
 
 | คำศัพท์เทคนิค | ความหมายระดับระบบปฏิบัติการ | ความหมายแบบเข้าใจง่าย |
 | :--- | :--- | :--- |
-| **Cluster (หรือ Allocation Unit)** | หน่วยการจัดสรรพื้นที่จัดเก็บข้อมูลขั้นต่ำที่สุดที่ระบบไฟล์ (File System) สามารถกำหนดให้แก่ไฟล์ได้ ประกอบด้วยเซกเตอร์ทางกายภาพ (Physical Sectors) หลายตัวรวมกัน | **"ขนาดห้อง/กล่องมาตรฐาน"** ที่ OS บังคับใช้ เช่น บน NTFS กำหนดไว้ 4,096 Bytes ต่อ 1 ช่องเสมอ |
+| **Cluster (หรือ Allocation Unit)** | หน่วยการจัดสรรของระบบไฟล์บน volume หนึ่ง ๆ; ขนาดจริงขึ้นกับการจัดรูปแบบ volume | **"ขนาดห้อง/กล่องมาตรฐาน"** เช่น volume NTFS บางลูกใช้ 4,096 ไบต์ แต่ต้องตรวจค่าจริง |
 | **Logical Size (EOF)** | ปริมาณข้อมูลจริงที่โปรแกรมเขียนลงในไฟล์ มีค่าเท่ากับตำแหน่งไบต์สุดท้ายของข้อมูล (End-of-File) | **"ขนาดเนื้อไฟล์จริง"** เช่น เขียนตัวหนังสือ 50 ตัว ก็มีขนาด 50 ไบต์ |
-| **Physical Size (Size on Disk)** | ผลรวมของพื้นที่คลัสเตอร์ทั้งหมดที่ระบบปฏิบัติการจับจองไว้บนฮาร์ดดิสก์เพื่อรองรับไฟล์นั้น | **"พื้นที่จริงที่ถูกกักไว้บนดิสก์"** คำนวณจากการคูณจำนวนคลัสเตอร์ที่ใช้ ด้วยขนาดของคลัสเตอร์ |
+| **Allocated Size (Size on Disk)** | จำนวนไบต์ที่ระบบไฟล์รายงานว่าจัดสรรให้ไฟล์; อาจต่างจาก Logical เมื่อมี compression หรือ sparse data | **"พื้นที่ที่ระบบรายงานว่าจองให้ไฟล์"** เวอร์ชันส่งงานต้องวัดจาก Windows API ไม่ใช้สูตรปัด cluster ของต้นแบบ |
 | **Internal Fragmentation** | สภาวะที่พื้นที่ภายในคลัสเตอร์ที่ได้รับการจัดสรร มีขนาดใหญ่กว่าขนาดของข้อมูลจริง ทำให้มีพื้นที่ว่างในคลัสเตอร์สุดท้ายที่สูญเปล่าไป | **"พื้นที่สูญเปล่าในกล่องสุดท้าย"** ที่ไม่มีใครเอาไปใช้ต่อได้ |
-| **Slack Space** | ชื่อเรียกของปริมาณไบต์ที่สูญเสียไปจาก Internal Fragmentation ($\text{Slack Space} = \text{Physical} - \text{Logical}$) | **"เนื้อที่ว่างเปล่าที่เสียไปฟรีๆ"** ในคลัสเตอร์ |
+| **Slack Space** | ในตัวอย่างไฟล์ไม่บีบอัดแบบง่าย อาจประมาณจากขนาดจัดสรรลบขนาดเนื้อหาได้ แต่สูตรนี้ไม่ครอบคลุม compressed/sparse file | **แนวคิดการเรียน** ไม่แสดงเป็นค่าจริงในเวอร์ชันส่งงาน |
 | **$MFT (Master File Table)** | โครงสร้างฐานข้อมูลเชิงระบบของระบบไฟล์ NTFS ที่ทำหน้าที่เป็นสารบัญหลัก เก็บเมทาดาตาของทุกไฟล์และไดเรกทอรีบนไดรฟ์ | **"สมุดทะเบียนราษฎร์ของฮาร์ดดิสก์"** ที่บันทึกข้อมูลทุกอย่างของไฟล์ |
-| **MFT Record** | ระเบียนข้อมูลขนาดคงที่ **1,024 ไบต์ (1 KB)** ภายในตาราง $MFT 1 ไฟล์จะมีระเบียนประจำตัวอย่างน้อย 1 ระเบียน | **"บัตรประชาชนของไฟล์ 1 ใบ"** ที่มีขนาด 1 KB เสมอ |
-| **Resident Attribute** | ข้อมูลเนื้อหาของไฟล์ที่ถูกบรรจุอยู่ **ภายในช่องว่างของระเบียน MFT 1,024 ไบต์โดยตรง** โดยไม่ต้องขอเบิกคลัสเตอร์ภายนอก | **"ไฟล์ที่ตัวเล็กมากจนแอบอยู่ในบัตรประชาชนตัวเองได้"** ทำให้กินเนื้อที่คลัสเตอร์นอกดิสก์เป็น 0 ไบต์ |
-| **Non-Resident Attribute** | ข้อมูลเนื้อหาของไฟล์ที่มีขนาดใหญ่เกินกว่าจะเก็บในระเบียน MFT ได้ จึงต้องจัดสรรคลัสเตอร์ภายนอกมารองรับ | **"ไฟล์ขนาดปกติ"** ที่ต้องออกไปจองคลัสเตอร์ 4KB ภายนอก |
+| **MFT Record** | ระเบียน metadata ใน NTFS; ขนาดและการใช้พื้นที่ขึ้นกับ volume/การจัดรูปแบบ | **"บัตรข้อมูลของไฟล์"** โดยตัวอย่างในบทเรียนอาจใช้ 1 KB |
+| **Resident Attribute** | NTFS อาจเก็บเนื้อหาไฟล์ไว้ในระเบียน MFT เมื่อมีพื้นที่พอ; ไม่มีเกณฑ์ 600 ไบต์ที่ใช้ได้กับทุกไฟล์ | **"ไฟล์เล็กที่อาจอยู่ใน metadata"** ต้องวัดก่อนอ้างขนาดจัดสรร |
+| **Non-Resident Attribute** | เนื้อหาที่เก็บนอกระเบียน MFT โดยจัดสรรหน่วยของ volume | **"ไฟล์ที่ต้องใช้พื้นที่นอก metadata"** ขนาด allocation unit ต้องตรวจจริง |
 | **Reparse Point** | วัตถุขยายในระบบไฟล์ NTFS ที่มีข้อมูลแท็กพิเศษ (Reparse Tag) กำกับ เพื่อให้ไดรเวอร์ระบบไฟล์สั่งเบี่ยงเส้นทางการเข้าถึง (เช่น Junctions, Symlinks) | **"ประตูกล / ทางลัดเสมือน"** ที่ชี้ข้ามไปโฟลเดอร์อื่น |
 | **Directory Junction** | ทางลัดระดับระบบไฟล์ที่เชื่อมโยงไดเรกทอรีหนึ่ง ไปยังไดเรกทอรีเป้าหมายอื่นในเครื่องเดียวกัน | **"ประตูมิติข้ามโฟลเดอร์"** ที่สร้างขึ้นในระดับ OS |
 | **Infinite Recursion Loop** | สภาวะที่การท่องโครงสร้างไดเรกทอรีวิ่งวนซ้ำในวงจรไม่รู้จบ จากการที่ Junction หรือ Symlink ชี้กลับไปยังโฟลเดอร์แม่ | **"ลูปนรก"** เดินวนอยู่ในเขาวงกตจนหน่วยความจำล้นและโปรแกรมพัง |
@@ -122,7 +126,7 @@ if (find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
 แท็กในระเบียน `dwReserved0` จะระบุประเภทอย่างชัดเจน:
 * `IO_REPARSE_TAG_MOUNT_POINT` (ค่า `0xA0000003`): Directory Junction
 * `IO_REPARSE_TAG_SYMLINK` (ค่า `0xA000000C`): Symbolic Link  
-การกรองในระดับ C-API นี้ช่วยป้องกันไม่ให้ระบบตกหลุมพราง **Infinite Recursion (ลูปนรก)** ได้ 100%
+การข้าม reparse point ช่วยลดความเสี่ยงการเดินวนของต้นแบบ แต่ต้องทดสอบ junction/symlink จริงก่อนอ้างว่าป้องกันได้ครบทุกกรณี
 
 ---
 
@@ -182,50 +186,26 @@ $$\text{Scan Directory } A \longrightarrow \text{Wait I/O} \longrightarrow \text
 
 | ไฟล์ในโปรเจกต์ | ผู้รับผิดชอบหลัก | มโนทัศน์ OS ที่นำมาโค้ด | ฟังก์ชันสำคัญในโค้ด |
 | :--- | :--- | :--- | :--- |
-| [`win32_api.py`](file:///d:/673380278-9/2569/OS/project/backend/win32_api.py) | **นายศรัณย์ พาพรชัย** | System Call Buffer, Context Switch, Disk Geometry | `fast_scan_directory()`<br/>`get_cluster_size()` |
-| [`os_storage.py`](file:///d:/673380278-9/2569/OS/project/backend/os_storage.py) | **นายปวริศช์ ประมวล** | Cluster Allocation, Slack Space, Resident MFT Detection | `calculate_physical_and_slack()` |
-| [`scanner.py`](file:///d:/673380278-9/2569/OS/project/backend/scanner.py) | **นายศรัณย์ พาพรชัย** | Concurrency, NVMe Queue Depth, Reparse Point Safety Gate | `scan_concurrent()`<br/>`worker()` |
-| [`arena.py`](file:///d:/673380278-9/2569/OS/project/backend/arena.py) | **นายธีรเมธ สายคำ** | Memory Optimization, Bottom-Up Post-Order Rollup | `CompactFileNode`<br/>`rollup_sizes()` |
-| [`index.html`](file:///d:/673380278-9/2569/OS/project/static/index.html) & [`app.js`](file:///d:/673380278-9/2569/OS/project/static/app.js) | **นายปวริศช์ / นายธีรเมธ** | TreeSize Interactive Model, State Sync, Tavily Design Tokens | `TreeItem (Recursive)`<br/>`revealInExplorer()` |
+| [`win32_api.py`](../../backend/win32_api.py) | **นายศรัณย์ พาพรชัย** | Windows API ของต้นแบบ; แกนส่งงานต้องมี C/POSIX เพิ่ม | `fast_scan_directory()`<br/>`get_cluster_size()` |
+| [`os_storage.py`](../../backend/os_storage.py) | **นายปวริศช์ ประมวล** | สูตรจำลอง cluster ของต้นแบบ; ไม่ใช่การวัด Allocated จริง | `calculate_physical_and_slack()` |
+| [`scanner.py`](../../backend/scanner.py) | **นายศรัณย์ พาพรชัย** | Scanner Python/Win32 ของต้นแบบ | `scan_concurrent()`<br/>`worker()` |
+| [`arena.py`](../../backend/arena.py) | **นายธีรเมธ สายคำ** | โครงสร้าง node ของต้นแบบ; ไม่มีหลักฐาน RAM ต่ำกว่าเป้าหมาย | `CompactFileNode`<br/>`rollup_sizes()` |
+| [`index.html`](../../static/index.html) & [`app.js`](../../static/app.js) | **นายปวริศช์ / นายธีรเมธ** | เว็บ tree/table ของต้นแบบ; ปุ่มต้องทดสอบ | `TreeItem (Recursive)`<br/>`revealInExplorer()` |
 
 ---
 
 ## 🎯 หมวดที่ 4: แนวทางการตอบคำถามกรรมการสอบ (Technical Defense Q&A)
 
+คำตอบต่อไปนี้ต้องปรับให้ตรงกับโค้ดและผลทดสอบของเวอร์ชันส่งงานก่อนใช้พูดจริง รายการต้นแบบ Win32 ข้างต้นมีไว้ศึกษาประวัติการออกแบบ
+
 ### ❓ คำถาม: "ทำไมถึงเรียกขนาดเนื้อหาไฟล์ว่า Logical Size และทำไมมันไม่เท่ากับ Size on Disk?"
 > **คำตอบเชิงเทคนิค:**  
-> "Logical Size หรือ End-of-File (EOF) คือปริมาณข้อมูลไบต์จริงที่ผู้ใช้เขียนลงในไฟล์ครับ แต่ระบบปฏิบัติการไม่สามารถจัดสรรพื้นที่บนฮาร์ดดิสก์แบบไบต์เดี่ยวได้ จึงต้องจัดสรรเป็นกลุ่มบล็อกมาตรฐานเรียกว่า **Cluster** (บน NTFS คือ 4,096 ไบต์)  
-> ทำให้ขนาด Size on Disk ต้องปัดเศษขึ้นเป็นผลคูณของคลัสเตอร์เสมอ ช่องว่างที่เหลือในคลัสเตอร์สุดท้ายเรียกว่า **Internal Fragmentation หรือ Slack Space** ครับ เว้นแต่ในกรณีพิเศษของไฟล์ขนาด $\le 600$ ไบต์ ที่ระบบไฟล์ NTFS จะเก็บเป็น **Resident File** ภายในช่อง MFT Record 1,024 ไบต์โดยตรง ทำให้ Size on Disk กลายเป็น 0 ไบต์ครับ"
+> "Logical Size คือขนาดเนื้อหาตาม metadata ของไฟล์ ส่วน Allocated Size คือจำนวนไบต์ที่ Windows รายงานว่าจัดสรรให้ไฟล์ ค่าต่างกันได้จากการจัดสรรหน่วย การบีบอัด หรือ sparse data เราจึงวัดสองค่าจาก API ที่ระบุใน SPEC และไม่ใช้สูตรปัด cluster เป็นค่าจริงของทุกไฟล์"
 
 ### ❓ คำถาม: "การใช้ Multi-threading สแกนดิสก์ มีโอกาสติด Deadlock ไหม และแก้ปัญหาอย่างไร?"
 > **คำตอบเชิงเทคนิค:**  
-> "ไม่มีโอกาสเกิด Deadlock ครับ เพราะกลุ่มเราไม่ได้ใช้โมเดลแบบ Thread แม่รอผลลัพธ์จาก Future ของ Thread ลูกที่อาจเกิด Thread Pool Starvation แต่เราเลือกใช้โมเดล **Producer-Consumer Work Queue** ผ่าน `queue.Queue` ที่เป็น Thread-Safe  
-> เธรดทุกตัวทำงานเป็น Consumer อิสระจากกันอย่างสิ้นเชิง เมื่อพบโฟลเดอร์ใหม่จะทำหน้าที่เป็น Producer หย่อนงานลงคิว โดยมี Task Counter คอยตรวจสอบสภาวะเสร็จสิ้น ทำให้ไม่มีสภาวะ Circular Wait และการันตีความปลอดภัย 100% ครับ"
+> "ต้นแบบใช้คิวและ worker threads เพื่อแบ่งงาน แต่รูปแบบนี้ไม่ได้รับประกันว่าปลอด deadlock หรือเร็วกว่าเสมอ เวอร์ชันส่งงานจะทดสอบการจบงาน การยกเลิก และข้อผิดพลาดจริง พร้อมเปรียบเทียบเวลาบน fixture เดียวกันก่อนกล่าวอ้างเรื่องความเร็ว"
 
 ### ❓ คำถาม: "การใช้ Python มีปัญหาติดเรื่อง GIL (Global Interpreter Lock) หรือไม่ แล้วทำไมถึงเร็วได้?"
 > **คำตอบเชิงเทคนิค:**  
-> "ไม่ติดปัญหาเรื่อง GIL ครับ เนื่องจากคอขวดของการสแกนไฟล์คือ **I/O Bound** และใน Core Engine เราเชื่อมต่อตรงเข้าสู่ Windows Win32 API ผ่านไลบรารี `ctypes`  
-> เมื่อไพทอนเรียกใช้ฟังก์ชันภายนอกที่เป็น Native C code ไพทอนจะทำการ **Release GIL โดยอัตโนมัติ** ขณะที่กำลังรอคอยการตอบสนองของคำสั่ง I/O ทำให้เธรดระดับฮาร์ดแวร์สามารถทำงานขนานกันเพื่อส่งคำสั่งลงสู่คอนโทรลเลอร์ของ NVMe SSD ได้อย่างเต็มที่ครับ"
-
----
-
-## 🐧 หมวดที่ 5: การเชื่อมโยง POSIX System Calls กับ Windows APIs (Syllabus Alignment)
-
-ใน Syllabus ระบุว่า *"Students will complete a system-level software project using POSIX system calls"*  
-เพื่อสะท้อนความใส่ใจในระดับมืออาชีพ ตารางนี้เปรียบเทียบ 1-to-1 ระหว่างมาตรฐาน **POSIX (Linux/Unix)** กับคำสั่ง **Windows NT / Win32** ที่โปรเจกต์เราใช้งาน:
-
-| หน้าที่การทำงานในระดับ OS | มาตรฐาน POSIX System Calls (Linux/Unix) | คำสั่ง Win32 API บน Windows (CoreSpace) | ความหมายเชิงลึก |
-| :--- | :--- | :--- | :--- |
-| **การเปิดอ่านสารบัญไดเรกทอรี** | `opendir()`, `readdir()`, `closedir()` | `FindFirstFileExW()`, `FindNextFileW()` | ยิง System Call ข้ามไปขอรายชื่อไฟล์จากเคอร์เนล |
-| **การอ่านขนาดเนื้อไฟล์จริง (EOF)** | `lstat() -> st_size` | `WIN32_FIND_DATAW -> (nFileSizeHigh << 32) \| nFileSizeLow` | ดึงขนาด Logical Size ที่โปรแกรมเขียนลงไฟล์ |
-| **การอ่านขนาดบล็อกบนดิสก์จริง** | `lstat() -> st_blocks * 512` | `Cluster Size * ceil(Size / Cluster Size)` | คำนวณขนาด Physical Allocation หน่วยคลัสเตอร์ |
-| **การตรวจวัดความจุดิสก์รวมและพื้นที่ว่าง** | `statvfs() -> f_blocks, f_bavail` | `GetDiskFreeSpaceExW()`, `GetDiskFreeSpaceW()` | ตรวจสอบ Total, Used, Free Space ของ Filesystem |
-| **การตรวจจับทางลัด (Junction/Symlink)** | `S_ISLNK(st_mode)` จาก `lstat()` | `FILE_ATTRIBUTE_REPARSE_POINT (0x400)` | ป้องกัน Infinite Recursion Loop จากวงวนของกราฟ |
-| **การประมวลผลมัลติเธรดขนานกัน** | `pthread_create()`, `pthread_join()` | `ThreadPoolExecutor` / Win32 Threads | ดันค่า Queue Depth ($QD > 1$) เพื่อดึงพลัง NVMe SSD |
-
-### ❓ คำถาม: "ถ้าอาจารย์ถามว่าใน Syllabus มีคำว่า POSIX ทำไมกลุ่มเราถึงรันบน Windows Win32 API?"
-> **คำตอบที่แสดงความใส่ใจระดับเกียรตินิยม:**  
-> "ทางกลุ่มได้ศึกษาและทำความเข้าใจมาตรฐาน **POSIX System Calls** ในบทที่ 13 และ 14 ของตำรา Silberschatz อย่างละเอียดครับ ทั้งคำสั่ง `opendir()`, `readdir()`, `lstat()` (ที่อ่านค่า `st_blocks * 512`) และ `statvfs()`  
-> และเราได้ทำ **System-level API Mapping** เพื่อนำหลักการทางทฤษฎีเดียวกันนี้มาลงมือสร้างจริงบนสถาปัตยกรรม Windows NT ผ่านฟังก์ชัน `FindFirstFileExW` (พร้อมบัฟเฟอร์ 64KB `LARGE_FETCH`) และ `GetDiskFreeSpaceW`  
-> ซึ่งทั้งสองมาตรฐานทำหน้าที่เชื่อมต่อกับ Filesystem Layer ในระดับเคอร์เนลเหมือนกันทุกประการ และยังทำให้เราสามารถทดลองกลไกเฉพาะตัวของ NTFS อย่าง **Resident Files ($\le 600$B ใน MFT)** ที่หาดูไม่ได้ในระบบ POSIX ดั้งเดิมได้อีกด้วยครับ"
-
+> "เป้าหมายใหม่ให้โปรแกรม C/POSIX เป็นแกนเดินไฟล์ ส่วน Python เป็นตัวเชื่อมเว็บและอ่านผล การตอบสนองของหน้าเว็บแยกจากเวลาสแกนด้วยงานเบื้องหลัง เราจะรายงานเวลาและหน่วยความจำที่วัดจริง ไม่อ้างว่า GIL หรือ NVMe queue depth เป็นเหตุให้เร็วโดยไม่มีการวัด"

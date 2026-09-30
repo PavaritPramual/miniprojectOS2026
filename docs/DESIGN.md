@@ -1,5 +1,7 @@
 # DESIGN.md — Tavily
 
+> **สถานะ:** เอกสารอ้างอิงภาพลักษณ์ของต้นแบบ ไม่ใช่ข้อกำหนดฟีเจอร์หรือหลักฐานว่าหน้าเว็บทำงานครบ ให้ใช้ [SPEC.md](SPEC.md) เป็นสเปกส่งงานและตรวจการใช้สี/องค์ประกอบกับหน้าเว็บจริงก่อนนำเสนอ
+
 > Extracted from [tavily.com](https://www.tavily.com/). The web-access layer for AI agents — a developer-tool brand styled as a warm, editorial paper magazine. Cream backgrounds (`#fefcf5`) carry warm dark prose (`#3c3a39`) while a vibrant pastel-bright accent palette (electric pink, primary red, lavender, turquoise) sparks selectively. The signature voice: `Suisse Int'l` for prose and `Suisse Int'l Mono` for `/slash-prefix` eyebrows that read like CLI paths.
 
 ---
