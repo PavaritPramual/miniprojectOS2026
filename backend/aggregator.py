@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from backend.arena import CompactFileNode
 from backend.os_storage import format_bytes
 
-def convert_to_tree_view_data(node: CompactFileNode, depth: int = 0, max_depth: int = 6) -> Dict[str, Any]:
+def convert_to_tree_view_data(node: CompactFileNode, depth: int = 0, max_depth: int = 30) -> Dict[str, Any]:
     """
     Transforms CompactFileNode tree into a clean JSON structure
     consumed directly by Vue 3 recursive tree component.

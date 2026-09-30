@@ -14,17 +14,17 @@
 │   ├── os_storage.py      # [ปวริศช์] คำนวณ Cluster Size, Slack Space (Internal Frag), Resident Files
 │   ├── arena.py           # [ธีรเมธ] โครงสร้าง Compact Node (__slots__) ลด RAM ให้ต่ำกว่า 50MB
 │   ├── scanner.py         # [ศรัณย์] ระบบสแกนแบบ Producer-Consumer Queue (ดัน NVMe Queue Depth QD > 1)
-│   └── aggregator.py      # [ธีรเมธ] แปลงข้อมูลเข้า TreeSize Sidebar และ Squarified Treemap (LoD Pruning)
+│   └── aggregator.py      # [ธีรเมธ] แปลงข้อมูลเข้า TreeSize Sidebar และ Details Table (Depth สูงสุด 30 ชั้น)
 ├── static/
 │   ├── index.html         # [ปวริศช์/ธีรเมธ] หน้าจอ TreeSize ผสม Tavily Design Tokens (Vue 3 CDN)
-│   ├── app.js             # [ปวริศช์/ธีรเมธ] Vue 3 Component แบบ Recursive Tree + ECharts
+│   ├── app.js             # [ปวริศช์/ธีรเมธ] Vue 3 Component แบบ Recursive Tree + Specification Table
 │   └── style.css          # [ปวริศช์/ธีรเมธ] สีครีมกระดาษอุ่น (#fefcf5) ตัวหนังสือ #3c3a39 และขอบบาง 1px
 └── main.py                # [ทุกคน] รันเซิร์ฟเวอร์ด้วย Python ตัวเดียว (Zero-Dependency)
 ```
 
 ---
 
-## 2. วิธีที่พวกคุณจะศึกษาการทำงาน (เจาะลึก 4 ประเด็นหลัก)
+## 2. วิธีที่พวกคุณจะศึกษาการทำงาน (เจาะลึก 5 ประเด็นหลัก)
 
 ### 📌 จุดที่ 1: ทำไมการอ่านไฟล์ถึงเร็ว และ Concurrency ทำงานอย่างไร? (ไฟล์ `scanner.py` & `win32_api.py`)
 * **ปัญหาเดิมของ OS:** คำสั่ง `os.walk` ทั่วไปทำงานแบบเธรดเดี่ยว ทำให้คิวคำสั่งบน SSD มีความลึกเท่ากับ 1 เสมอ ($QD = 1$) และต้องสลับบริบทข้ามโหมด (Context Switch ระหว่าง Ring 3 ผู้ใช้ กับ Ring 0 เคอร์เนล) บ่อยครั้ง
@@ -40,9 +40,16 @@
 * **โจทย์:** ถ้ามีโฟลเดอร์ประเภท Directory Junctions หรือ Symlinks ชี้วนกลับไปที่โฟลเดอร์แม่ จะเกิด **Infinite Recursion Loop** ทันที
 * **วิธีแก้:** ตรวจจับบิตแฟล็ก `FILE_ATTRIBUTE_REPARSE_POINT` (0x400) ใน Win32 API ถ้าเจอ ให้มองเป็น Leaf Node ห้ามเจาะลึกเข้าไปซ้ำ
 
-### 📌 จุดที่ 4: TreeSize Directory Tree & LoD Pruning (ไฟล์ `app.js` & `aggregator.py`)
-* **Tree Component:** ใช้ Vue 3 ทำ Recursive Tree กางและพับกิ่งโฟลเดอร์ได้ลึกไม่จำกัด
-* **LoD Pruning:** รวมไฟล์ย่อยที่มีขนาดเล็กกว่า 0.5% เข้าเป็นก้อน `[Others]` ทำให้การเรนเดอร์ Treemap ลื่นไหล 60 FPS ไม่กระตุก
+### 📌 จุดที่ 4: TreeSize Directory Tree & Details Specification (ไฟล์ `app.js` & `aggregator.py`)
+* **Tree Component:** ใช้ Vue 3 ทำ Recursive Tree กางและพับกิ่งโฟลเดอร์ย่อยได้อย่างอิสระ ลึกถึง 30 ระดับชั้น
+* **Folder Specs Cards & Details Table:** จัดกลุ่มสรุป Logical, Physical, Slack, และจำนวนไฟล์ย่อย พร้อมปุ่ม Reveal in Explorer สั่งเปิด Windows Explorer ชี้ตำแหน่งจริง
+
+### 📌 จุดที่ 5: การตอบคำถามเรื่อง POSIX System Calls (Syllabus Alignment)
+* **คำถาม:** "ในเอกสารรายวิชามีระบุเรื่อง POSIX System Calls ทำไมกลุ่มนี้จึงเลือกทำบน Windows NT / Win32 API?"
+* **แนวทางการตอบอย่างมั่นใจและใส่ใจ:**
+  > "ทางกลุ่มได้ศึกษามาตรฐาน **POSIX System Calls** จากบทที่ 13 และ 14 ของตำรา Silberschatz อย่างละเอียดครับ ทั้ง `opendir()`, `readdir()`, `lstat()` และ `statvfs()`  
+  > และเราได้ทำการวิเคราะห์เปรียบเทียบ (System Call Mapping) เพื่อนำแกนทฤษฎีเดียวกันนี้มาลงมือทำจริงบนระบบปฏิบัติการหลักที่เราใช้งานคือ Windows NT ผ่าน C-API `FindFirstFileExW`, `GetDiskFreeSpaceW`  
+  > ซึ่งทั้งสองมาตรฐานทำหน้าที่เชื่อมต่อกับ Filesystem Layer ในระดับเคอร์เนลเหมือนกัน และบน Windows ยังเปิดโอกาสให้เราได้ศึกษาและพิสูจน์กลไกเฉพาะอย่าง **NTFS Resident Files** ซึ่งช่วยให้เราเข้าใจการจัดการพื้นที่จัดเก็บข้อมูลได้ลึกซึ้งยิ่งขึ้นครับ"
 
 ---
 

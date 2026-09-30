@@ -122,6 +122,18 @@ python tools/benchmark.py C:\Users
 | **Chapter 14: File-System Implementation** | Allocation Methods & Internal Fragmentation | คำนวณ Cluster Allocation (4,096 B) และ Slack Space บนระบบไฟล์ NTFS |
 | **Chapter 14: Inodes / Indexed Allocation** | Resident Metadata Storage | คำนวณขนาด NTFS Resident Files ($\le 600$B) ให้มี Physical On-Disk Size = 0 Bytes |
 
+### 5.1 ตารางเทียบเคียง POSIX System Calls กับ Windows Win32 API
+
+| มาตรฐาน POSIX System Calls (Unix/Linux) | คำสั่ง Win32 API บน Windows (CoreSpace) | ความหมายและกลไกใน OS |
+| :--- | :--- | :--- |
+| `opendir()`, `readdir()`, `closedir()` | `FindFirstFileExW()`, `FindNextFileW()` | System Call ข้ามไปขอข้อมูล Directory Entries จากเคอร์เนล |
+| `lstat() -> st_size` | `(nFileSizeHigh << 32) \| nFileSizeLow` | ดึงขนาดของเนื้อไฟล์จริง (End of File) |
+| `lstat() -> st_blocks * 512` | `Cluster Size * ceil(Size / Cluster Size)` | คำนวณการจัดสรรบล็อกคลัสเตอร์จริงบนฟิสิคัลดิสก์ |
+| `statvfs() -> f_blocks, f_bavail` | `GetDiskFreeSpaceExW()`, `GetDiskFreeSpaceW()` | ตรวจวัดความจุและพื้นที่ว่างระดับ Filesystem Geometry |
+| `S_ISLNK(st_mode)` | `FILE_ATTRIBUTE_REPARSE_POINT (0x400)` | ป้องกัน Infinite Recursion Loop จากกราฟวงวน |
+| `pthread_create()`, `pthread_join()` | Producer-Consumer Worker Queue (Multi-threading) | ส่ง I/O คู่ขนานเพื่อผลักดัน Queue Depth ($QD > 1$) บน SSD |
+
+
 ---
 
 ## 6. ประวัติการตัดสินใจและการปรับแก้ (Decision History)

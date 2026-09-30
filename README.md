@@ -138,3 +138,24 @@ python tools/benchmark.py <path_to_folder>
 ```bash
 python tools/benchmark.py C:\Users
 ```
+
+---
+
+## 🐧 การเชื่อมโยงทฤษฎีระบบปฏิบัติการและ POSIX Mapping (OS Concepts Alignment)
+
+โปรเจกต์นี้ตอบโจทย์ข้อกำหนดของรายวิชา Operating Systems โดยครอบคลุมทั้งแนวคิดเชิงทฤษฎีและการประยุกต์ใช้งานจริงในระดับ System Calls:
+
+| สาระการเรียนรู้ในวิชา OS | มาตรฐาน POSIX System Calls (Unix/Linux) | คำสั่ง Win32 API ที่ใช้ใน CoreSpace | กลไกในระบบปฏิบัติการ |
+| :--- | :--- | :--- | :--- |
+| **Directory Traversal** | `opendir()`, `readdir()`, `closedir()` | `FindFirstFileExW()`, `FindNextFileW()` | การสลับโหมดข้าม User/Kernel เพื่ออ่านไดเรกทอรี |
+| **File Logical Size** | `lstat() -> st_size` | `(nFileSizeHigh << 32) \| nFileSizeLow` | ดึงขนาดของเนื้อไฟล์จริง (End of File) |
+| **Physical Allocation** | `lstat() -> st_blocks * 512` | `Cluster Size * ceil(Size / Cluster Size)` | คำนวณขนาดคลัสเตอร์จริงบนฮาร์ดแวร์จัดเก็บข้อมูล |
+| **Filesystem Geometry** | `statvfs() -> f_blocks, f_bavail` | `GetDiskFreeSpaceExW()`, `GetDiskFreeSpaceW()` | ดึงข้อมูลความจุ คลัสเตอร์ และพื้นที่ว่างของระบบไฟล์ |
+| **Cycle & Loop Safety** | `S_ISLNK(st_mode)` | `FILE_ATTRIBUTE_REPARSE_POINT (0x400)` | ป้องกัน Infinite Recursion จาก Junctions/Symlinks |
+| **Concurrency / Worker**| `pthread_create()`, `pthread_join()` | Producer-Consumer Worker Queue (Multi-threading) | ผลักดัน Queue Depth ($QD > 1$) ดึงประสิทธิภาพ NVMe |
+
+> เอกสารประกอบการเรียนรู้และคู่มือเตรียมสอบสัมภาษณ์ฉบับเต็ม สามารถศึกษาเพิ่มเติมได้ที่:
+> - [`OS_CONCEPTS_EXPLAINED.md`](./OS_CONCEPTS_EXPLAINED.md) — คำอธิบายทฤษฎี OS เชิงลึกพร้อมอภิธานศัพท์
+> - [`STUDY_GUIDE.md`](./STUDY_GUIDE.md) — คู่มือเตรียมตัวนำเสนอและแบ่งหน้าที่สมาชิกกลุ่ม
+> - [`HANDOFF.md`](./HANDOFF.md) — เอกสารส่งมอบโครงการและแผนงาน
+

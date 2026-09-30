@@ -206,3 +206,26 @@ $$\text{Scan Directory } A \longrightarrow \text{Wait I/O} \longrightarrow \text
 > **คำตอบเชิงเทคนิค:**  
 > "ไม่ติดปัญหาเรื่อง GIL ครับ เนื่องจากคอขวดของการสแกนไฟล์คือ **I/O Bound** และใน Core Engine เราเชื่อมต่อตรงเข้าสู่ Windows Win32 API ผ่านไลบรารี `ctypes`  
 > เมื่อไพทอนเรียกใช้ฟังก์ชันภายนอกที่เป็น Native C code ไพทอนจะทำการ **Release GIL โดยอัตโนมัติ** ขณะที่กำลังรอคอยการตอบสนองของคำสั่ง I/O ทำให้เธรดระดับฮาร์ดแวร์สามารถทำงานขนานกันเพื่อส่งคำสั่งลงสู่คอนโทรลเลอร์ของ NVMe SSD ได้อย่างเต็มที่ครับ"
+
+---
+
+## 🐧 หมวดที่ 5: การเชื่อมโยง POSIX System Calls กับ Windows APIs (Syllabus Alignment)
+
+ใน Syllabus ระบุว่า *"Students will complete a system-level software project using POSIX system calls"*  
+เพื่อสะท้อนความใส่ใจในระดับมืออาชีพ ตารางนี้เปรียบเทียบ 1-to-1 ระหว่างมาตรฐาน **POSIX (Linux/Unix)** กับคำสั่ง **Windows NT / Win32** ที่โปรเจกต์เราใช้งาน:
+
+| หน้าที่การทำงานในระดับ OS | มาตรฐาน POSIX System Calls (Linux/Unix) | คำสั่ง Win32 API บน Windows (CoreSpace) | ความหมายเชิงลึก |
+| :--- | :--- | :--- | :--- |
+| **การเปิดอ่านสารบัญไดเรกทอรี** | `opendir()`, `readdir()`, `closedir()` | `FindFirstFileExW()`, `FindNextFileW()` | ยิง System Call ข้ามไปขอรายชื่อไฟล์จากเคอร์เนล |
+| **การอ่านขนาดเนื้อไฟล์จริง (EOF)** | `lstat() -> st_size` | `WIN32_FIND_DATAW -> (nFileSizeHigh << 32) \| nFileSizeLow` | ดึงขนาด Logical Size ที่โปรแกรมเขียนลงไฟล์ |
+| **การอ่านขนาดบล็อกบนดิสก์จริง** | `lstat() -> st_blocks * 512` | `Cluster Size * ceil(Size / Cluster Size)` | คำนวณขนาด Physical Allocation หน่วยคลัสเตอร์ |
+| **การตรวจวัดความจุดิสก์รวมและพื้นที่ว่าง** | `statvfs() -> f_blocks, f_bavail` | `GetDiskFreeSpaceExW()`, `GetDiskFreeSpaceW()` | ตรวจสอบ Total, Used, Free Space ของ Filesystem |
+| **การตรวจจับทางลัด (Junction/Symlink)** | `S_ISLNK(st_mode)` จาก `lstat()` | `FILE_ATTRIBUTE_REPARSE_POINT (0x400)` | ป้องกัน Infinite Recursion Loop จากวงวนของกราฟ |
+| **การประมวลผลมัลติเธรดขนานกัน** | `pthread_create()`, `pthread_join()` | `ThreadPoolExecutor` / Win32 Threads | ดันค่า Queue Depth ($QD > 1$) เพื่อดึงพลัง NVMe SSD |
+
+### ❓ คำถาม: "ถ้าอาจารย์ถามว่าใน Syllabus มีคำว่า POSIX ทำไมกลุ่มเราถึงรันบน Windows Win32 API?"
+> **คำตอบที่แสดงความใส่ใจระดับเกียรตินิยม:**  
+> "ทางกลุ่มได้ศึกษาและทำความเข้าใจมาตรฐาน **POSIX System Calls** ในบทที่ 13 และ 14 ของตำรา Silberschatz อย่างละเอียดครับ ทั้งคำสั่ง `opendir()`, `readdir()`, `lstat()` (ที่อ่านค่า `st_blocks * 512`) และ `statvfs()`  
+> และเราได้ทำ **System-level API Mapping** เพื่อนำหลักการทางทฤษฎีเดียวกันนี้มาลงมือสร้างจริงบนสถาปัตยกรรม Windows NT ผ่านฟังก์ชัน `FindFirstFileExW` (พร้อมบัฟเฟอร์ 64KB `LARGE_FETCH`) และ `GetDiskFreeSpaceW`  
+> ซึ่งทั้งสองมาตรฐานทำหน้าที่เชื่อมต่อกับ Filesystem Layer ในระดับเคอร์เนลเหมือนกันทุกประการ และยังทำให้เราสามารถทดลองกลไกเฉพาะตัวของ NTFS อย่าง **Resident Files ($\le 600$B ใน MFT)** ที่หาดูไม่ได้ในระบบ POSIX ดั้งเดิมได้อีกด้วยครับ"
+
