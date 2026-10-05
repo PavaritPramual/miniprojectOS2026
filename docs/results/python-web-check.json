@@ -1,0 +1,53 @@
+{
+  "uniqueChildren": 60,
+  "missingC": "SCANNER_NOT_CONFIGURED",
+  "rootFolder": {
+    "relativePath": "",
+    "name": "demo",
+    "kind": "directory",
+    "logicalBytes": 1048645,
+    "allocatedBytes": 1302528,
+    "partial": false,
+    "hasChildren": true
+  },
+  "scope": "Real Python HTTP/SQLite with explicit sample records; no group C scan",
+  "scan": {
+    "id": "7e00fff1c1da44cf95b9c5a8b86078b6",
+    "rootPath": "D:\\demo",
+    "source": "sample",
+    "isSample": true,
+    "state": "completed",
+    "fileCount": 64,
+    "directoryCount": 13,
+    "errorCount": 0,
+    "skippedCount": 0,
+    "elapsedSeconds": 0.02,
+    "partial": false,
+    "error": null
+  },
+  "pages": [
+    50,
+    10
+  ],
+  "date": "2026-10-05",
+  "manualBrowserChecks": {
+    "issuesPages": [
+      50,
+      60
+    ],
+    "uniqueMany": 60,
+    "rootAllocated": "1.24 MiB (sample)",
+    "manyLogical": "60 B",
+    "emptyLogical": "0 B",
+    "manyPages": [
+      50,
+      60
+    ],
+    "failedReason": "REVIEW_FAILED_SAVED",
+    "manyAllocated": "240 KiB (sample)",
+    "consoleErrors": 0,
+    "pendingSize": "unknown / calculating",
+    "rootLogical": "1 MiB",
+    "emptyAllocated": "0 B"
+  }
+}

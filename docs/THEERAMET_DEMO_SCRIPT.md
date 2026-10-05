@@ -45,7 +45,7 @@ Python bridge และ SQLite รวมใน checkout แล้ว ทดส�
 
 ผู้พูด ปวริศช์ · 70 วินาที
 
-ผลอัตโนมัติอยู่ docs/ui-evidence/results.json, http-results.json และ review-results.json ชุด review ใช้ Python HTTP กับ SQLite จริงและข้อมูลทดสอบ แก้ยอด root, รายละเอียด issues และ status.error แล้ว ไม่ใช่ผลรัน scanner จริง หลักฐาน screenshots แสดงชัดว่าโหมด mock ต้องให้ทุกคนลอง Scan/Cancel/Reveal หลังรวมงาน ทดสอบ full-drive จริง เก็บเวลาและหน่วยความจำ แล้วปรับสไลด์นี้ตามหลักฐานก่อนนำเสนอ ไม่อ้างเร็วขึ้นหรือแม่นยำกว่าต้นแบบโดยไม่มีผลวัด
+ผลอัตโนมัติอยู่ docs/ui-evidence/results.json, http-results.json และ review-results.json ชุด review ใช้ Python HTTP กับ SQLite จริงและข้อมูลทดสอบ แก้ยอด root, รายละเอียด issues และ status.error แล้ว ไม่ใช่ผลรัน scanner จริง หลักฐาน screenshots แสดงชัดว่าโหมด mock ต้องให้ทุกคนลอง Scan/Cancel/Reveal หลังรวมงาน ทดสอบ full-drive จริง เก็บจำนวน ขนาด ผลการยกเลิก และข้อจำกัด แล้วปรับสไลด์นี้ตามหลักฐานก่อนนำเสนอ ตาม SPEC วันที่ 5 ต.ค. ไม่มีงาน benchmark หรือวัดหน่วยความจำ
 
 ## ซ้อมตอบคำถามสั้น ๆ ของธีรเมธ
 
