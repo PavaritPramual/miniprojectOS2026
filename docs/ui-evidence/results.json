@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-05T12:22:02.253Z",
+  "scope": "Browser UI simulation; not C/WSL/Windows integration",
+  "results": [
+    {
+      "name": "Partial status / no console crash / first 50 rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Table pagination 50 + 10 without duplicates",
+      "result": "PASS"
+    },
+    {
+      "name": "Unknown / zero / compressed size / skipped link",
+      "result": "PASS"
+    },
+    {
+      "name": "Reveal error and success are visible",
+      "result": "PASS"
+    },
+    {
+      "name": "Tree pagination includes directories after item 50",
+      "result": "PASS"
+    },
+    {
+      "name": "Depth 8 / collapse / expand / breadcrumb navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "Empty directory / Thai names and spaces",
+      "result": "PASS"
+    },
+    {
+      "name": "Cancel keeps partial results and allows next scan",
+      "result": "PASS"
+    },
+    {
+      "name": "Failed scan status is shown",
+      "result": "PASS"
+    },
+    {
+      "name": "Completed scan and saved-result resume",
+      "result": "PASS"
+    },
+    {
+      "name": "Required path / offline assets / mobile layout",
+      "result": "PASS"
+    },
+    {
+      "name": "Real adapter displays HTTP error detail",
+      "result": "PASS"
+    }
+  ],
+  "consoleErrors": [],
+  "external": []
+}

@@ -1,260 +1,339 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CoreSpace | Storage Analyzer</title>
-  <!-- Tailwind CSS CDN (Configured for Tavily Warm Paper Palette) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            tavilyBg: '#fefcf5',
-            tavilyWhite: '#fffcf6',
-            tavilyTint: '#eaeae2',
-            tavilyText: '#3c3a39',
-            tavilyBorder: 'rgba(11, 9, 7, 0.1)',
-            tavilyBorderDark: 'rgba(11, 9, 7, 0.25)',
-            tavilyRed: '#ff272d',
-            tavilyOrange: '#ff7300',
-            tavilyLav: '#817fff',
-            tavilyBlue: '#2677ff',
-            tavilyTurquoise: '#79deeb',
-            tavilyYellow: '#fdc211',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Vue 3 via CDN (Clean, declarative, zero Node.js) -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body class="bg-tavilyBg text-tavilyText">
-
-  <div id="app" class="min-h-screen flex flex-col">
-
-    <!-- Top Navigation Header -->
-    <header class="bg-tavilyWhite border-b border-tavilyBorder px-8 py-4 sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CoreSpace — สำรวจพื้นที่ไฟล์</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script defer src="/static/vendor/vue-3.5.13.global.prod.js"></script>
+    <script defer src="/static/api.js"></script>
+    <script defer src="/static/mock-api.js"></script>
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header class="topbar">
         <div>
-          <span class="font-mono text-sm font-semibold text-tavilyText tracking-tight">/corespace</span>
+          <span class="eyebrow">/corespace</span>
+          <h1>พื้นที่ของคุณ อยู่ตรงไหน</h1>
+          <p class="muted">สำรวจโฟลเดอร์และขนาดไฟล์ ภายในเครื่องของคุณ</p>
         </div>
-      </div>
-
-
-      <!-- Controls Toolbar -->
-      <div class="flex flex-wrap items-center gap-3">
-        <!-- Drive Picker -->
-        <div class="flex items-center gap-2 bg-tavilyBg border border-tavilyBorder rounded-full px-3 py-1.5 text-xs font-mono">
-          <span class="text-black/50">Drive:</span>
-          <select v-model="selectedDrive" @change="onDriveChange" class="bg-transparent focus:outline-none cursor-pointer font-medium">
-            <option v-for="d in drives" :key="d.path" :value="d.path">
-              {{ d.path }} ({{ formatBytes(d.used_bytes) }} / {{ formatBytes(d.total_bytes) }})
-            </option>
-          </select>
+        <a :href="mock ? '/' : '/?mock=1'" class="mode-link"
+          >{{ mock ? 'ใช้ข้อมูลจริง →' : 'ลองข้อมูลตัวอย่าง →' }}</a
+        >
+      </header>
+      <main class="shell">
+        <div v-if="mock" class="mock-banner">
+          <strong>โหมดทดสอบ UI · ข้อมูลสมมติ</strong
+          ><span
+            >ไม่ได้อ่านไฟล์จริง ไม่ได้เรียก C/WSL และไม่ใช่ผล benchmark</span
+          >
         </div>
-
-        <!-- Target Path Input -->
-        <div class="flex items-center gap-2 bg-tavilyBg border border-tavilyBorder rounded-full px-4 py-1.5 text-xs font-mono w-80">
-          <span class="text-black/50">Path:</span>
-          <input v-model="targetPath" type="text" placeholder="Folder path..." class="bg-transparent focus:outline-none w-full text-xs font-medium" />
+        <form class="controls panel" @submit.prevent="startScan">
+          <label
+            >ไดรฟ์<select
+              v-model="selectedDrive"
+              @change="changeDrive"
+              :disabled="active || starting || drivesLoading"
+            >
+              <option value="">เลือกไดรฟ์</option>
+              <option
+                v-for="drive in drives"
+                :key="drive.path"
+                :value="drive.path"
+              >
+                {{ drive.path }} · ว่าง {{ formatBytes(drive.free_bytes) }}
+              </option>
+            </select></label
+          >
+          <label class="path-field"
+            >ตำแหน่งโฟลเดอร์<input
+              v-model="targetPath"
+              placeholder="เช่น D:\\Documents"
+              :disabled="active || starting"
+              autocomplete="off"
+          /></label>
+          <label v-if="mock"
+            >สถานการณ์ตัวอย่าง<select
+              v-model="scenario"
+              :disabled="active || starting"
+            >
+              <option value="partial">60 รายการ + อ่านไม่ได้ / ลิงก์</option>
+              <option value="completed">สแกนสำเร็จ</option>
+              <option value="slow">งานนาน สำหรับลอง Cancel</option>
+              <option value="failed">scanner ล้มเหลว</option>
+            </select></label
+          >
+          <button
+            class="primary"
+            :disabled="!apiReady || starting || active"
+            type="submit"
+          >
+            {{ starting ? 'กำลังเริ่ม…' : 'Scan' }}
+          </button>
+          <button
+            type="button"
+            @click="cancelScan"
+            :disabled="!active || cancelBusy || job?.state === 'cancelling'"
+          >
+            {{ cancelBusy || job?.state === 'cancelling' ? 'กำลังยกเลิก…' :
+            'Cancel' }}
+          </button>
+          <p v-if="driveError" class="error full">
+            {{ driveError }}
+            <button type="button" @click="loadDrives">ลองโหลดไดรฟ์ใหม่</button>
+          </p>
+          <p v-else-if="apiReady && !drives.length" class="muted small full">
+            ไม่มีไดรฟ์ที่ backend รายงาน คุณยังกรอกตำแหน่งโฟลเดอร์ได้
+          </p>
+        </form>
+        <div v-if="error" role="alert" class="message error">
+          {{ error }}
+          <button v-if="job" @click="refreshStatus">ลองอ่านสถานะใหม่</button>
         </div>
-
-        <!-- Scan Button -->
-        <button @click="startScan" :disabled="isScanning" class="btn-dark-pill">
-          <span v-if="!isScanning">Scan Folder</span>
-          <span v-else class="flex items-center gap-2">
-            <span class="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            Scanning...
-          </span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Main Content Workspace (Split TreeSize View) -->
-    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 max-w-[1780px] w-full mx-auto">
-
-      <!-- Left Sidebar (TreeSize Directory Tree) - 4 Cols -->
-      <aside class="lg:col-span-4 tavily-card p-4 flex flex-col min-h-[720px] max-h-[calc(100vh-110px)] overflow-hidden">
-        <div class="flex items-center justify-between pb-3 border-b border-tavilyBorder">
+        <div v-if="notice" role="status" class="message">{{ notice }}</div>
+        <section v-if="job" class="status panel" aria-live="polite">
           <div>
-            <div class="eyebrow">/directory-tree</div>
-            <h2 class="text-sm font-semibold text-tavilyText mt-0.5">Folder Structure</h2>
+            <span class="eyebrow">/scan-status</span>
+            <h2>
+              <span :class="['state-dot', {moving: active}]"></span>{{
+              STATES[job.state] }}
+            </h2>
+            <span class="mono small">{{ job.id }}</span>
           </div>
-          <span v-if="scanData" class="text-xs font-mono text-black/50">
-            {{ formatNumber(scanData.scanned_files) }} files ({{ scanData.scan_duration_seconds }}s)
-          </span>
-        </div>
-
-        <!-- Recursive Tree View -->
-        <div class="flex-1 overflow-y-auto mt-3 pr-1 space-y-0.5">
-          <div v-if="!scanData" class="h-full flex flex-col items-center justify-center text-center p-6 text-black/40">
-            <svg class="w-10 h-10 mb-2 stroke-current stroke-1" fill="none" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
-            <p class="text-xs">Select a drive or path and click "Scan Folder"</p>
-          </div>
-
-          <!-- Tree Component Root -->
-          <tree-item
-            v-else
-            :node="scanData.tree_view"
-            :root-size="scanData.tree_view.size_logical"
-            :selected-path="selectedNode ? selectedNode.path : ''"
-            @select-node="selectNode"
-          ></tree-item>
-        </div>
-      </aside>
-
-      <!-- Right Main Content (Folder Specs & Contents Table) - 8 Cols -->
-      <main class="lg:col-span-8 space-y-6 flex flex-col">
-
-        <!-- Selected Folder Header & Path -->
-        <div class="tavily-card p-5">
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <dl>
             <div>
-              <div class="eyebrow">/selected-folder</div>
-              <h1 class="text-base font-bold font-mono text-tavilyText mt-1 break-all">
-                {{ selectedNode ? selectedNode.path : (scanData ? scanData.root_path : 'No folder selected') }}
-              </h1>
+              <dt>ไฟล์ที่อ่านแล้ว</dt>
+              <dd>{{ job.fileCount ?? '—' }}</dd>
             </div>
-            <button v-if="selectedNode" @click="revealInExplorer(selectedNode.path)" class="btn-outlined-pill" title="Open this folder in Windows Explorer">
-              <span>Reveal in Explorer</span>
+            <div>
+              <dt>โฟลเดอร์</dt>
+              <dd>{{ job.directoryCount ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>เวลาที่ใช้</dt>
+              <dd>{{ job.elapsedSeconds ?? '—' }} s</dd>
+            </div>
+            <div>
+              <dt>อ่านไม่ได้ / ข้าม</dt>
+              <dd>{{ job.errorCount ?? 0 }} / {{ job.skippedCount ?? 0 }}</dd>
+            </div>
+          </dl>
+          <p v-if="active" class="small muted full">
+            อัปเดตทุก 2 วินาที · ยอดที่ยังไม่สรุปกำลังคำนวณ
+          </p>
+          <p v-if="job.error" class="error full">{{ job.error }}</p>
+          <details
+            v-if="job.partial || job.errorCount || job.skippedCount"
+            class="full issues"
+            :open="issuesOpen"
+            @toggle="toggleIssues"
+          >
+            <summary>ดูเหตุผลที่ข้อมูลไม่ครบ</summary>
+            <p v-if="issues.loading" role="status">กำลังโหลดรายละเอียด…</p>
+            <p v-if="issues.error" class="error" role="alert">
+              {{ issues.error }}
+              <button @click="loadIssues" :disabled="issues.loading">
+                ลองโหลดปัญหาใหม่
+              </button>
+            </p>
+            <ul v-if="issues.items.length">
+              <li v-for="(issue, i) in issues.items" :key="i">
+                <code>{{ issue.relativePath || '(root)' }}</code> — {{
+                issue.issueType }} / {{ issue.code }}: {{ issue.message }}
+              </li>
+            </ul>
+            <p v-if="issues.loaded">
+              แสดง {{ issues.items.length }} จาก {{ issues.totalIssues }} ปัญหา
+            </p>
+            <p v-if="issues.loaded && !issues.items.length">
+              ไม่พบรายละเอียดปัญหาที่บันทึกไว้สำหรับงานนี้
+            </p>
+            <button
+              v-if="issues.hasMore"
+              @click="loadIssues"
+              :disabled="issues.loading"
+            >
+              แสดงปัญหาเพิ่มเติม 50 รายการ
             </button>
-          </div>
-
-          <!-- Specs Grid (Key OS Metrics) -->
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-5 pt-4 border-t border-tavilyBorder">
-            <!-- 1. Logical Size (EOF) -->
-            <div class="bg-tavilyBg border border-tavilyBorder rounded-xl p-3">
-              <span class="text-[11px] font-mono text-black/50 block">Logical Size (EOF)</span>
-              <span class="text-lg font-bold font-mono text-tavilyText mt-0.5 block">
-                {{ selectedNode ? selectedNode.formatted_size : '--' }}
-              </span>
-              <span class="text-[11px] font-mono text-black/40 block mt-1">
-                {{ selectedNode ? formatNumber(selectedNode.size_logical) + ' B' : '' }}
-              </span>
+          </details>
+        </section>
+        <div v-if="job" class="workspace">
+          <aside class="panel tree-panel">
+            <span class="eyebrow">/directory-tree</span>
+            <h2>โครงสร้างโฟลเดอร์</h2>
+            <p class="muted small">กางได้ตามความลึกจริง · โหลดทีละ 50 รายการ</p>
+            <ul class="tree">
+              <tree-folder :node="root" :depth="0" :view="treeView" />
+            </ul>
+          </aside>
+          <section class="panel contents">
+            <div class="folder-head">
+              <div>
+                <span class="eyebrow">/selected-folder</span>
+                <h2>{{ selectedFolder?.name }}</h2>
+              </div>
+              <button @click="reveal(selected)" :disabled="revealBusy !== null">
+                {{ revealBusy === selected?.relativePath ? 'กำลังเปิด…' :
+                'Reveal โฟลเดอร์' }}
+              </button>
             </div>
-
-            <!-- 2. Physical Size on Disk -->
-            <div class="bg-tavilyBg border border-tavilyBorder rounded-xl p-3">
-              <span class="text-[11px] font-mono text-black/50 block">Size on Disk (Physical)</span>
-              <span class="text-lg font-bold font-mono text-blue-600 mt-0.5 block">
-                {{ selectedNode ? selectedNode.formatted_physical : '--' }}
-              </span>
-              <span class="text-[11px] font-mono text-blue-700/60 block mt-1">
-                Cluster allocated
-              </span>
-            </div>
-
-            <!-- 3. Slack Space -->
-            <div class="bg-tavilyBg border border-tavilyBorder rounded-xl p-3">
-              <span class="text-[11px] font-mono text-black/50 block">Slack Space (Waste)</span>
-              <span class="text-lg font-bold font-mono text-amber-600 mt-0.5 block">
-                {{ selectedNode ? selectedNode.formatted_slack : '--' }}
-              </span>
-              <span class="text-[11px] font-mono text-amber-700/70 block mt-1">
-                {{ getSlackPercent(selectedNode) }}% wasted
-              </span>
-            </div>
-
-            <!-- 4. Files & Subfolders Count -->
-            <div class="bg-tavilyBg border border-tavilyBorder rounded-xl p-3">
-              <span class="text-[11px] font-mono text-black/50 block">Total Items</span>
-              <span class="text-lg font-bold font-mono text-tavilyText mt-0.5 block">
-                {{ selectedNode ? formatNumber(selectedNode.file_count) : '--' }} files
-              </span>
-              <span class="text-[11px] font-mono text-black/40 block mt-1">
-                {{ selectedNode ? formatNumber(selectedNode.subfolder_count) : 0 }} subfolders
-              </span>
-            </div>
-
-            <!-- 5. Cluster Geometry -->
-            <div class="bg-tavilyBg border border-tavilyBorder rounded-xl p-3">
-              <span class="text-[11px] font-mono text-black/50 block">Cluster Size</span>
-              <span class="text-lg font-bold font-mono text-tavilyText mt-0.5 block">
-                {{ scanData ? formatNumber(scanData.cluster_size) + ' B' : '4,096 B' }}
-              </span>
-              <span class="text-[11px] font-mono text-black/40 block mt-1">
-                Allocation Unit
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Contents Specification Table (TreeSize Style Detailed List) -->
-        <div class="tavily-card p-5 flex-1 flex flex-col">
-          <div class="flex items-center justify-between pb-3 border-b border-tavilyBorder">
-            <div>
-              <div class="eyebrow">/contents-specification</div>
-              <h3 class="text-sm font-semibold text-tavilyText mt-0.5">Subfolders & Files Details</h3>
-            </div>
-            <span class="text-xs font-mono text-black/40">
-              {{ currentChildren.length }} items in this folder
-            </span>
-          </div>
-
-          <div class="overflow-x-auto mt-3 flex-1">
-            <table class="w-full text-left text-xs font-mono">
-              <thead>
-                <tr class="border-b border-tavilyBorder text-black/50">
-                  <th class="py-2.5 px-3">Name</th>
-                  <th class="py-2.5 px-3 w-36">% of Folder</th>
-                  <th class="py-2.5 px-3 text-right">Logical Size</th>
-                  <th class="py-2.5 px-3 text-right">Allocated (Disk)</th>
-                  <th class="py-2.5 px-3 text-right">Items</th>
-                  <th class="py-2.5 px-3 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-tavilyBorder/40">
-                <tr v-if="currentChildren.length === 0">
-                  <td colspan="6" class="text-center py-12 text-black/40">
-                    No subfolders or files in this folder
-                  </td>
-                </tr>
-                <tr
-                  v-for="item in currentChildren"
-                  :key="item.path"
-                  class="hover:bg-black/[0.02] transition cursor-pointer"
-                  @click="item.is_dir ? selectNode(item) : null"
+            <nav class="breadcrumbs" aria-label="เส้นทางที่เลือก">
+              <button @click="navigate('')">{{ job.rootPath }}</button
+              ><template v-for="crumb in breadcrumbs" :key="crumb.path"
+                ><span>/</span
+                ><button @click="navigate(crumb.path)">
+                  {{ crumb.name }}
+                </button></template
+              >
+            </nav>
+            <div class="metrics">
+              <div>
+                <span>Logical Size</span
+                ><strong
+                  >{{ formatBytes(selectedFolder?.logicalBytes) }}</strong
                 >
-                  <td class="py-2.5 px-3 flex items-center gap-2">
-                    <span v-if="item.is_dir" class="text-amber-600">📁</span>
-                    <span v-else class="text-blue-500">📄</span>
-                    <span class="font-medium text-tavilyText hover:underline">{{ item.name }}</span>
-                  </td>
-                  <td class="py-2.5 px-3">
-                    <div class="flex items-center gap-2">
-                      <div class="bar-track flex-1">
-                        <div class="bar-fill" :style="{ width: getPercentOfParent(item) + '%' }"></div>
-                      </div>
-                      <span class="text-[11px] text-black/60 w-9 text-right">{{ getPercentOfParent(item) }}%</span>
-                    </div>
-                  </td>
-                  <td class="py-2.5 px-3 text-right font-medium">{{ item.formatted_size }}</td>
-                  <td class="py-2.5 px-3 text-right text-blue-700/80">{{ item.formatted_physical }}</td>
-                  <td class="py-2.5 px-3 text-right text-black/50">
-                    {{ item.is_dir ? (item.file_count + ' f') : '--' }}
-                  </td>
-                  <td class="py-2.5 px-3 text-center" @click.stop>
-                    <button @click="revealInExplorer(item.path)" class="text-[11px] px-2.5 py-1 rounded border border-tavilyBorder hover:bg-tavilyTint transition">
-                      Reveal
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+              </div>
+              <div>
+                <span>Allocated Size</span
+                ><strong
+                  >{{ formatBytes(selectedFolder?.allocatedBytes) }}</strong
+                >
+              </div>
+              <div>
+                <span>ความครบถ้วน</span
+                ><strong
+                  >{{ active ? 'กำลังคำนวณ' : selectedFolder?.partial ||
+                  currentPage?.partial ? 'ผลบางส่วน / ไม่ทราบยอด' :
+                  'ตามข้อมูลที่อ่านได้' }}</strong
+                >
+              </div>
+            </div>
+            <div class="table-tools">
+              <p>
+                แสดง <strong>{{ currentItems.length }}</strong> จาก {{
+                currentPage?.loaded ? currentPage.totalChildren : '…' }} รายการ
+              </p>
+              <button @click="refreshVisible" :disabled="currentPage?.loading">
+                รีเฟรชรายการ
+              </button>
+            </div>
+            <p v-if="currentPage?.error" role="alert" class="error">
+              {{ currentPage.error }}
+              <button @click="loadChildren(selected.relativePath)">
+                ลองโหลดรายการใหม่
+              </button>
+            </p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ชื่อ</th>
+                    <th>Logical</th>
+                    <th>Allocated</th>
+                    <th>ข้อมูล</th>
+                    <th>ตำแหน่ง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in currentItems" :key="item.relativePath">
+                    <td>
+                      <button
+                        v-if="item.kind === 'directory'"
+                        class="folder-link"
+                        @click="select(item)"
+                      >
+                        ▱ {{ item.name }}</button
+                      ><span v-else
+                        >{{ item.kind === 'link' ? '↗' : '·' }} {{ item.name
+                        }}</span
+                      >
+                    </td>
+                    <td class="number">{{ formatBytes(item.logicalBytes) }}</td>
+                    <td class="number">
+                      {{ formatBytes(item.allocatedBytes) }}
+                    </td>
+                    <td class="small">
+                      {{ item.kind === 'link' ? 'ลิงก์ / ไม่เดินต่อ' :
+                      item.partial ? 'ผลบางส่วน' : '—' }}
+                    </td>
+                    <td>
+                      <button
+                        class="small"
+                        :aria-label="'Reveal ' + item.name"
+                        @click="reveal(item)"
+                        :disabled="revealBusy !== null"
+                      >
+                        {{ revealBusy === item.relativePath ? 'กำลังเปิด…' :
+                        'Reveal' }}
+                      </button>
+                    </td>
+                  </tr>
+                  <tr v-if="!currentItems.length && !currentPage?.loading">
+                    <td colspan="5" class="empty">
+                      {{ currentPage?.error ? 'โหลดรายการไม่สำเร็จ' : active ?
+                      'ยังไม่มีรายการที่สแกนพบ' : 'ไม่มีรายการในโฟลเดอร์นี้' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p v-if="currentPage?.loading" role="status" class="muted">
+              กำลังโหลดรายการ…
+            </p>
+            <button
+              v-if="currentPage?.hasMore"
+              class="more"
+              :disabled="currentPage.loading"
+              @click="loadChildren(selected.relativePath)"
+            >
+              แสดงเพิ่มเติม 50 รายการ
+            </button>
+            <p class="footnote">
+              Allocated เรียงจากมากไปน้อยเมื่อสแกนเสร็จ · “ไม่ทราบ” ไม่ใช่ศูนย์
+              · ยอดตาม path อาจนับ hard link ซ้ำ
+              และไม่เท่าพื้นที่ใช้ทั้งหมดของไดรฟ์
+            </p>
+          </section>
         </div>
-
+        <section v-else class="empty panel">
+          <span class="eyebrow">/ready-to-explore</span>
+          <h2>เริ่มจากโฟลเดอร์ที่อยากรู้จัก</h2>
+          <p>กรอกตำแหน่งแล้วกด Scan เพื่อดูขนาดและรายการข้างใน</p>
+        </section>
+        <details class="panel saved">
+          <summary>เปิดผลสแกนที่เตรียมไว้</summary>
+          <p class="small muted">
+            เก็บเฉพาะรหัสงานในเบราว์เซอร์ ผลจริงอยู่ที่ backend หาก backend ล้าง
+            cache จะเปิดรหัสเดิมไม่ได้
+          </p>
+          <form @submit.prevent="resume(resumeId)" class="resume-form">
+            <label
+              >รหัสงานสแกน<input
+                v-model="resumeId"
+                placeholder="scan-…"
+                :disabled="active || starting" /></label
+            ><button :disabled="!apiReady || active || starting || !resumeId">
+              เปิดผลด้วยรหัส
+            </button>
+          </form>
+          <ul>
+            <li v-for="entry in history" :key="entry.id">
+              <button @click="resume(entry.id)" :disabled="active || starting">
+                {{ entry.rootPath }} — {{ STATES[entry.state] }}
+              </button>
+            </li>
+          </ul>
+          <button @click="clearHistory" :disabled="!history.length">
+            ล้างประวัติในเบราว์เซอร์
+          </button>
+        </details>
+        <footer>
+          CoreSpace · Operating Systems Mini Project ·
+          <a href="/static/presentation.html">สไลด์และคำอธิบายระบบ</a>
+        </footer>
       </main>
-
     </div>
-
-  </div>
-
-  <!-- Main Vue App Script -->
-  <script src="/static/app.js"></script>
-</body>
+    <noscript>กรุณาเปิด JavaScript เพื่อใช้ CoreSpace</noscript>
+  </body>
 </html>
