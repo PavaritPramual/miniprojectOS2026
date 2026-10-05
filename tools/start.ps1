@@ -49,7 +49,7 @@ if ($env:CORESPACE_SCANNER_WSL_PATH) {
     if ($LASTEXITCODE -ne 0) { throw 'The scanner is unavailable or not executable in the selected WSL distro.' }
     Write-Host "Scanner: $env:CORESPACE_SCANNER_WSL_PATH"
 } else {
-    Write-Host 'C scanner is not configured. The prototype and explicitly selected sample API can still be tested.'
+    Write-Host 'C scanner is not configured. The web UI can be opened; use explicitly selected sample API data for Python integration checks.'
 }
 if ($CheckOnly) { return }
 Push-Location $projectPath
