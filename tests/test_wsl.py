@@ -1,7 +1,5 @@
 """Opt-in real WSL process checks: CORESPACE_TEST_WSL=1 python -m unittest tests.test_wsl -v."""
 import os
-import json
-import sys
 import subprocess
 import time
 import unittest
@@ -82,26 +80,6 @@ class WslTests(BackendCase):
             status = wait_finished(self.manager, scan_id, 20)
         self.assertEqual(status["state"], "failed")
         self.assertIs(self.manager._linux_alive(self.captured_job["pid"]), False)
-
-    def test_benchmark_tool_with_labelled_mock(self):
-        self.configure("demo")
-        project = Path(__file__).resolve().parents[1]
-        output = self.root / "benchmark-mock.json"
-        result = subprocess.run(
-            [sys.executable, str(project / "tools/benchmark_backend.py"),
-             "--path", str(project / "fixtures/generated/demo"),
-             "--scanner", self.manager.scanner_wsl_path, "--runs", "3", "--test-only", "--output", str(output)],
-            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        report = json.loads(output.read_text(encoding="utf-8"))
-        self.assertTrue(report["testOnly"])
-        self.assertEqual(len(report["runs"]), 6)
-        self.assertTrue(report["comparableFileCounts"])
-        for run in report["runs"]:
-            self.assertGreater(run["pythonPeakWorkingSetBytes"], 0)
-            if run["engine"] == "new":
-                self.assertGreater(run["cPeakRssBytes"], 0)
-                self.assertEqual(run["state"], "completed")
 
 
 if __name__ == "__main__": unittest.main()

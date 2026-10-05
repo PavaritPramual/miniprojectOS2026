@@ -1,32 +1,32 @@
-Run: 2026-10-05T20:16:16.024796+07:00
+Run: 2026-10-04T18:28:37.155121+07:00
 Python: 3.12.14
 OS: Windows-11-10.0.26200-SP0
 WSL tests requested: True
 WSL executable is a controlled Python mock, not the group's C scanner.
 Databases and process scripts are temporary; Explorer is mocked.
 
-test_api_sample_pages_issues_errors (tests.test_api.ApiTests.test_api_sample_pages_issues_errors) ... 127.0.0.1 - - [05/Oct/2026 20:15:56] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "POST /api/scans HTTP/1.1" 202 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/346ac1595fe94d4c98245c25e2fe2119 HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/346ac1595fe94d4c98245c25e2fe2119/children?parent=many&offset=0&limit=50 HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/346ac1595fe94d4c98245c25e2fe2119/children?parent=many&offset=50&limit=50 HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/346ac1595fe94d4c98245c25e2fe2119/issues HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/346ac1595fe94d4c98245c25e2fe2119/children?limit=51 HTTP/1.1" 400 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "GET /api/scans/absent HTTP/1.1" 404 -
-127.0.0.1 - - [05/Oct/2026 20:15:56] "POST /api/scans/346ac1595fe94d4c98245c25e2fe2119/cancel HTTP/1.1" 409 -
+test_api_sample_pages_issues_errors (tests.test_api.ApiTests.test_api_sample_pages_issues_errors) ... 127.0.0.1 - - [04/Oct/2026 18:28:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "POST /api/scans HTTP/1.1" 202 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/f5d49c1b86f8498384ebc3277074b36d HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/f5d49c1b86f8498384ebc3277074b36d/children?parent=many&offset=0&limit=50 HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/f5d49c1b86f8498384ebc3277074b36d/children?parent=many&offset=50&limit=50 HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/f5d49c1b86f8498384ebc3277074b36d/issues HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/f5d49c1b86f8498384ebc3277074b36d/children?limit=51 HTTP/1.1" 400 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "GET /api/scans/absent HTTP/1.1" 404 -
+127.0.0.1 - - [04/Oct/2026 18:28:11] "POST /api/scans/f5d49c1b86f8498384ebc3277074b36d/cancel HTTP/1.1" 409 -
 ok
 test_concurrent_initialization_creates_one_manager (tests.test_api.ApiTests.test_concurrent_initialization_creates_one_manager) ... ok
-test_latest_real_and_reveal (tests.test_api.ApiTests.test_latest_real_and_reveal) ... 127.0.0.1 - - [05/Oct/2026 20:15:57] "GET /api/scans/latest?path=D%3A%5C673380278-9%5C2569%5COS%5Cproject%5Cfixtures%5Cgenerated%5Ctest-runs%5Ctmpnjhl5rbn HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "GET /api/scans/latest?path=D%3A%5Cmissing HTTP/1.1" 404 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "GET /api/scans/latest?path=relative HTTP/1.1" 400 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "POST /api/reveal HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "POST /api/reveal HTTP/1.1" 404 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "POST /api/reveal HTTP/1.1" 404 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "GET /api/drives HTTP/1.1" 500 -
+test_latest_real_and_reveal (tests.test_api.ApiTests.test_latest_real_and_reveal) ... 127.0.0.1 - - [04/Oct/2026 18:28:12] "GET /api/scans/latest?path=D%3A%5C673380278-9%5C2569%5COS%5Cproject%5Cfixtures%5Cgenerated%5Ctest-runs%5Ctmpj_lnctce HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "GET /api/scans/latest?path=D%3A%5Cmissing HTTP/1.1" 404 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "GET /api/scans/latest?path=relative HTTP/1.1" 400 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "POST /api/reveal HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "POST /api/reveal HTTP/1.1" 404 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "POST /api/reveal HTTP/1.1" 404 -
+127.0.0.1 - - [04/Oct/2026 18:28:12] "GET /api/drives HTTP/1.1" 500 -
 ok
-test_status_and_cancel_respond_while_producer_is_silent (tests.test_api.ApiTests.test_status_and_cancel_respond_while_producer_is_silent) ... 127.0.0.1 - - [05/Oct/2026 20:15:57] "POST /api/scans HTTP/1.1" 202 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "GET /api/scans/31d307a30481464da40daaa0e7f202a1 HTTP/1.1" 200 -
-127.0.0.1 - - [05/Oct/2026 20:15:57] "POST /api/scans/31d307a30481464da40daaa0e7f202a1/cancel HTTP/1.1" 202 -
+test_status_and_cancel_respond_while_producer_is_silent (tests.test_api.ApiTests.test_status_and_cancel_respond_while_producer_is_silent) ... 127.0.0.1 - - [04/Oct/2026 18:28:13] "POST /api/scans HTTP/1.1" 202 -
+127.0.0.1 - - [04/Oct/2026 18:28:13] "GET /api/scans/cbc530eaed5440618698e805df1634e4 HTTP/1.1" 200 -
+127.0.0.1 - - [04/Oct/2026 18:28:13] "POST /api/scans/cbc530eaed5440618698e805df1634e4/cancel HTTP/1.1" 202 -
 ok
 test_130_and_10000_files_cross_batches (tests.test_backend.BackendTests.test_130_and_10000_files_cross_batches) ... ok
 test_cancel_cannot_overwrite_finished_state (tests.test_backend.BackendTests.test_cancel_cannot_overwrite_finished_state) ... ok
@@ -41,11 +41,12 @@ test_unconfirmed_stop_is_failed (tests.test_backend.BackendTests.test_unconfirme
 test_unknown_allocation_and_issues_propagate (tests.test_backend.BackendTests.test_unknown_allocation_and_issues_propagate) ... ok
 test_whole_drive_guard_and_no_automatic_sample (tests.test_backend.BackendTests.test_whole_drive_guard_and_no_automatic_sample) ... ok
 test_windows_measurement_unknown_and_zero (tests.test_backend.BackendTests.test_windows_measurement_unknown_and_zero) ... ok
+test_benchmark_tool_with_labelled_mock (tests.test_wsl.WslTests.test_benchmark_tool_with_labelled_mock) ... ok
 test_wsl_cancel_slow_silent_and_ignore_term (tests.test_wsl.WslTests.test_wsl_cancel_slow_silent_and_ignore_term) ... ok
 test_wsl_demo_bridge_real_windows_allocation (tests.test_wsl.WslTests.test_wsl_demo_bridge_real_windows_allocation) ... ok
 test_wsl_stop_on_python_failure (tests.test_wsl.WslTests.test_wsl_stop_on_python_failure) ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests in 19.836s
+Ran 21 tests in 25.286s
 
 OK

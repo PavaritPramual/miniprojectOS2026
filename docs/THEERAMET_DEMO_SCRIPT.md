@@ -39,13 +39,13 @@ Python bridge และ SQLite รวมใน checkout แล้ว ทดส�
 
 ผู้พูด ธีรเมธ · 120 วินาที
 
-ก่อนวันส่งต้องเปลี่ยนมาเดโมด้วย backend C/WSL จริงบน Windows ถ้ายังไม่พร้อม ให้บอกว่าเป็นการสาธิต UI ผ่าน simulator เปิด /?mock=1 แล้วรอ partial เลือก many-folders/deep และทดลอง error ใน Reveal งานนานใช้ scenario slow สำหรับ Cancel ผลเต็มไดรฟ์ต้องมีรหัสงานจริงที่สแกนจบแล้ว ห้ามอ้างผล mock ว่าเป็นผลสดหรือ benchmark
+ก่อนวันส่งต้องเปลี่ยนมาเดโมด้วย backend C/WSL จริงบน Windows ถ้ายังไม่พร้อม ให้บอกว่าเป็นการสาธิต UI ผ่าน simulator เปิด /?mock=1 แล้วรอ partial เลือก many-folders/deep และทดลอง error ใน Reveal งานนานใช้ scenario slow สำหรับ Cancel ผลเต็มไดรฟ์ต้องมีรหัสงานจริงที่สแกนจบแล้ว ผลจาก mock ต้องระบุว่าเป็นข้อมูลสมมติ
 
 ## หน้า 7 — ผลทดสอบและงานรวมระบบ
 
 ผู้พูด ปวริศช์ · 70 วินาที
 
-ผลอัตโนมัติอยู่ docs/ui-evidence/results.json, http-results.json และ review-results.json ชุด review ใช้ Python HTTP กับ SQLite จริงและข้อมูลทดสอบ แก้ยอด root, รายละเอียด issues และ status.error แล้ว ไม่ใช่ผลรัน scanner จริง หลักฐาน screenshots แสดงชัดว่าโหมด mock ต้องให้ทุกคนลอง Scan/Cancel/Reveal หลังรวมงาน ทดสอบ full-drive จริง เก็บเวลาและหน่วยความจำ แล้วปรับสไลด์นี้ตามหลักฐานก่อนนำเสนอ ไม่อ้างเร็วขึ้นหรือแม่นยำกว่าต้นแบบโดยไม่มีผลวัด
+ผลอัตโนมัติอยู่ docs/ui-evidence/results.json, http-results.json และ review-results.json ชุด review ใช้ Python HTTP กับ SQLite จริงและข้อมูลทดสอบ ตรวจยอด root รายการปัญหา และข้อความงานล้มเหลวแล้ว ผลนี้ยังไม่ยืนยัน C จริง ภาพหน้าจอบางภาพเป็นโหมด mock หลังรวม C ให้ทั้งกลุ่มลอง Scan/Cancel/Reveal และสแกนทั้งไดรฟ์ ตรวจจำนวนไฟล์และโฟลเดอร์ ขนาด ความถูกต้องของรายการ ผลการยกเลิก และข้อจำกัด เติมเฉพาะผลที่รันจริงก่อนนำเสนอ ตาม SPEC วันที่ 5 ต.ค. ไม่มีงาน benchmark หรือวัดหน่วยความจำ
 
 ## ซ้อมตอบคำถามสั้น ๆ ของธีรเมธ
 

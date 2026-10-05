@@ -130,7 +130,7 @@ HTTP error ใช้ `{code,detail}`; ข้อมูลชื่อไฟล์
 - Allocation บน Windows เทียบ API/Properties, รวมกรณี compressed/sparse และ permission
 - Cancel หยุด process จริง ไม่ใช่เปลี่ยนเฉพาะ status
 - Reveal เปิด Explorer บนเครื่องนำเสนอจริง
-- full-drive สแกนจบ, เวลา/รายการต่อวินาที/peak memory จากการวัดจริง
+- full-drive สแกนจบหรือยกเลิกได้ แสดงจำนวนและปัญหาตามจริง ตาม SPEC ปัจจุบันไม่มีงาน benchmark หรือวัดหน่วยความจำ
 - ตกลงวิธีล้าง SQLite cache หากทีมต้องการเพิ่ม endpoint
 - เพื่อนกด Scan/Cancel/Reveal และซ้อมนำเสนอร่วมกัน 2 รอบ
 
