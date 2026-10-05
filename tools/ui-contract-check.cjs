@@ -9,6 +9,9 @@ const path = require("node:path");
     viewport: { width: 1400, height: 950 },
   });
   const base = process.env.CORESPACE_URL || "http://127.0.0.1:8080";
+  const examples = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "../docs/examples/api.json"), "utf8"),
+  );
   const results = [],
     requests = [],
     errors = [];
@@ -99,12 +102,23 @@ const path = require("node:path");
         totalChildren: all.length,
         hasMore: offset + data.length < all.length,
         partial: !terminal,
+        folder: {
+          ...examples.rootChildren.folder,
+          relativePath: parent,
+          name: parent || "demo",
+          logicalBytes: terminal ? 1048576 : null,
+          allocatedBytes: terminal ? 1048576 : null,
+        },
         items: data,
       });
     }
+    if (url.pathname.endsWith("/issues"))
+      return send({ ...examples.issuesPage, scanId: `http-${scanCount}` });
     if (statusFailure)
       return send({ code: "TEMP", detail: "status unavailable fixture" }, 503);
     return send({
+      ...examples.runningStatus,
+      error: null,
       id: `http-${scanCount}`,
       rootPath: "D:\\demo",
       state: cancelled ? "cancelled" : terminal ? "completed" : "running",
@@ -202,6 +216,10 @@ const path = require("node:path");
       assert.match(
         await page.locator("tbody tr").first().innerText(),
         /file-57/,
+      );
+      assert.equal(
+        await page.locator(".metrics strong").first().innerText(),
+        "1 MiB",
       );
       await page
         .getByRole("button", { name: "แสดงเพิ่มเติม 50 รายการ", exact: true })

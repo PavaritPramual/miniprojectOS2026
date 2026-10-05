@@ -1,0 +1,34 @@
+{
+  "scope": "Real Python HTTP/SQLite with isolated generated records; no C/WSL/Windows allocation test",
+  "results": [
+    {
+      "name": "Real completed root displays 1 MiB and complete metadata",
+      "result": "PASS"
+    },
+    {
+      "name": "Real empty root displays zero, not unknown",
+      "result": "PASS"
+    },
+    {
+      "name": "Issue endpoint: first 50, retry failed next page, then all 60",
+      "result": "PASS"
+    },
+    {
+      "name": "Saved failed status displays error and clears previous issues",
+      "result": "PASS"
+    },
+    {
+      "name": "Polling transition to failed displays status.error",
+      "result": "PASS"
+    },
+    {
+      "name": "Selected nested folder and root totals refresh after completion",
+      "result": "PASS"
+    },
+    {
+      "name": "Late issues response cannot leak into a different scan",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

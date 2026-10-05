@@ -122,21 +122,40 @@
           <p v-if="active" class="small muted full">
             อัปเดตทุก 2 วินาที · ยอดที่ยังไม่สรุปกำลังคำนวณ
           </p>
-          <p v-if="job.detail" class="error full">{{ job.detail }}</p>
+          <p v-if="job.error" class="error full">{{ job.error }}</p>
           <details
             v-if="job.partial || job.errorCount || job.skippedCount"
-            class="full"
+            class="full issues"
+            :open="issuesOpen"
+            @toggle="toggleIssues"
           >
             <summary>ดูเหตุผลที่ข้อมูลไม่ครบ</summary>
-            <ul v-if="issueDetails.length">
-              <li v-for="(issue, i) in issueDetails" :key="i">
-                <code>{{ issue.path }}</code> — {{ issue.message }}
+            <p v-if="issues.loading" role="status">กำลังโหลดรายละเอียด…</p>
+            <p v-if="issues.error" class="error" role="alert">
+              {{ issues.error }}
+              <button @click="loadIssues" :disabled="issues.loading">
+                ลองโหลดปัญหาใหม่
+              </button>
+            </p>
+            <ul v-if="issues.items.length">
+              <li v-for="(issue, i) in issues.items" :key="i">
+                <code>{{ issue.relativePath || '(root)' }}</code> — {{
+                issue.issueType }} / {{ issue.code }}: {{ issue.message }}
               </li>
             </ul>
-            <p v-else>
-              Backend แจ้งผลไม่ครบ แต่ยังไม่ได้ส่งรายละเอียดรายรายการ กรุณาตรวจ
-              log ของ scanner
+            <p v-if="issues.loaded">
+              แสดง {{ issues.items.length }} จาก {{ issues.totalIssues }} ปัญหา
             </p>
+            <p v-if="issues.loaded && !issues.items.length">
+              ไม่พบรายละเอียดปัญหาที่บันทึกไว้สำหรับงานนี้
+            </p>
+            <button
+              v-if="issues.hasMore"
+              @click="loadIssues"
+              :disabled="issues.loading"
+            >
+              แสดงปัญหาเพิ่มเติม 50 รายการ
+            </button>
           </details>
         </section>
         <div v-if="job" class="workspace">
@@ -152,7 +171,7 @@
             <div class="folder-head">
               <div>
                 <span class="eyebrow">/selected-folder</span>
-                <h2>{{ selected?.name }}</h2>
+                <h2>{{ selectedFolder?.name }}</h2>
               </div>
               <button @click="reveal(selected)" :disabled="revealBusy !== null">
                 {{ revealBusy === selected?.relativePath ? 'กำลังเปิด…' :
@@ -171,16 +190,20 @@
             <div class="metrics">
               <div>
                 <span>Logical Size</span
-                ><strong>{{ formatBytes(selected?.logicalBytes) }}</strong>
+                ><strong
+                  >{{ formatBytes(selectedFolder?.logicalBytes) }}</strong
+                >
               </div>
               <div>
                 <span>Allocated Size</span
-                ><strong>{{ formatBytes(selected?.allocatedBytes) }}</strong>
+                ><strong
+                  >{{ formatBytes(selectedFolder?.allocatedBytes) }}</strong
+                >
               </div>
               <div>
                 <span>ความครบถ้วน</span
                 ><strong
-                  >{{ active ? 'กำลังคำนวณ' : selected?.partial ||
+                  >{{ active ? 'กำลังคำนวณ' : selectedFolder?.partial ||
                   currentPage?.partial ? 'ผลบางส่วน / ไม่ทราบยอด' :
                   'ตามข้อมูลที่อ่านได้' }}</strong
                 >

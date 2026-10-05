@@ -1,12 +1,12 @@
 # งานของธีรเมธ — หน้าเว็บและความเข้าใจระบบ
 
-ปรับวันที่ 4 ตุลาคม 2569 บน branch `feature/theeramet-ui`
+ปรับวันที่ 5 ตุลาคม 2569 บน branch `feature/theeramet-ui`
 
 ## สถานะที่ต้องพูดตรงกัน
 
 หน้าเว็บใหม่ใช้สัญญา `docs/CONTRACT.md` และมี simulator สำหรับทดสอบปุ่มบน Linux/Windows ด้วยหน้าจอชุดเดียวกัน โหมด `?mock=1` ไม่อ่านไฟล์จริง ไม่เรียก C ไม่วัด Windows Allocated และไม่ใช่ benchmark
 
-`main.py` ใน checkout ที่ตรวจยังมี `/api/scan` ของต้นแบบ แต่ไม่มี `/api/scans` ตามสัญญาใหม่ รอบนี้ไม่แก้ Python/C ซึ่งเป็นพื้นที่ของเพื่อน โหมดจริงจึงจะแจ้งข้อผิดพลาดจนกว่า backend ใหม่จะถูกรวม การรวมงานบน Windows/WSL และผล full-drive ยังไม่ผ่านการยืนยัน
+`main.py` ใน checkout มี `/api/scans`, children พร้อม `folder`, และ `/issues` แล้ว หน้าเว็บอ่าน API เหล่านี้โดยตรง ทดสอบการเชื่อม Browser → Python HTTP → SQLite ด้วยฐานข้อมูลชั่วคราวแยกจากผู้ใช้ ส่วน C/WSL, Windows allocation, Explorer และ full-drive ยังต้องยืนยันบนเครื่อง Windows ของทีม
 
 ## เริ่มใช้และลองงานของธีรเมธ
 
@@ -15,9 +15,9 @@
 3. รอเปลี่ยนจาก running เป็น partial แล้วลองแสดงเพิ่ม 50 → 60, เลือก `many-folders`, กาง `deep` ถึงชั้น 8, เปิด `docs` และ `empty`
 4. เลือกสถานการณ์งานนานแล้ว Scan → Cancel; เลือกล้มเหลวเพื่อดู failed; เลือกสำเร็จเพื่อดู completed
 5. Reveal ของ `อ่านไม่ได้.txt` จำลอง HTTP error ส่วนไฟล์อื่นจำลองสำเร็จ มีข้อความชัดเจนว่าไม่ได้เปิด Explorer จริง
-6. เปิด `/` เพื่อใช้ HTTP API จริง ถ้า backend ยังเป็นต้นแบบจะเห็นข้อความว่า endpoint ใหม่ยังไม่พร้อม
+6. เปิด `/` เพื่อใช้ HTTP API จริง การสแกนจริงต้องเปิด server บน Windows และตั้งตำแหน่ง C ใน WSL ให้พร้อม
 7. ปิดอินเทอร์เน็ตได้ แต่ Python localhost ต้องยังทำงานอยู่ ส่วน Vue และ CSS อยู่ในเครื่องทั้งหมด
-8. หลังรวม backend แล้ว ผลที่เคยเปิดจะมีรหัสอยู่ใน “เปิดผลสแกนที่เตรียมไว้” หรือกรอกรหัสจาก backend ได้โดยตรง ข้อมูลไฟล์ไม่ได้เก็บใน localStorage
+8. ผลที่เคยเปิดจะมีรหัสอยู่ใน “เปิดผลสแกนที่เตรียมไว้” หรือกรอกรหัสจาก backend ได้โดยตรง ข้อมูลไฟล์ไม่ได้เก็บใน localStorage
 
 ## ไฟล์แต่ละตัวทำอะไร
 
@@ -31,6 +31,7 @@
 | `static/mock-api.json` | ตัวอย่าง 50 + 10 รายการที่คัดลอกจากเอกสารทีม |
 | `static/vendor/` | Vue 3.5.13 และ MIT license |
 | `tools/ui-check.cjs` | ทดสอบการกดหน้าเว็บด้วย Playwright และบันทึกภาพ |
+| `tools/ui-review-check.cjs` + `tools/ui-review-server.py` | ทดสอบ PR #1 กับ Python/SQLite จริงด้วยข้อมูลทดสอบและฐานข้อมูลชั่วคราว |
 | `tools/ui-contract-check.cjs` | ทดสอบ HTTP adapter / error / race ด้วยเซิร์ฟเวอร์จำลองใน browser test |
 | `docs/ui-evidence/` | ผลและภาพจาก UI tests; ไม่ใช่ผลสแกนไฟล์จริง |
 | `static/presentation.html` | สไลด์ 7 หน้าแบบเปิดใน browser ได้ offline |
@@ -89,7 +90,7 @@ Logical คือขนาดเนื้อหาไฟล์ตาม metadata
 
 UI ไม่คำนวณ allocated ด้วยสูตร cluster และไม่แปลง null เป็น 0 ค่า 0 แปลว่าวัดได้ศูนย์ แต่ null แปลว่าไม่ทราบ/ยังสรุปไม่ได้ ขนาดโฟลเดอร์มาจาก backend ไม่ใช่รวมเฉพาะ 50 แถวที่โหลดมา เพราะจะได้ยอดผิด
 
-CONTRACT ปัจจุบันไม่กำหนดยอด root ใน status จึงแสดงยอด root ว่าไม่ทราบ แทนการสร้างผลรวมจากหน้าที่โหลด ส่วนโฟลเดอร์ย่อยใช้ logicalBytes/allocatedBytes ของ directory entry ที่ backend ส่งมา
+ยอดทั้ง root และโฟลเดอร์ที่เลือกอ่านจาก `children.folder` โดยเก็บ metadata แยกตาม relativePath เมื่องานจบจะขอใหม่ให้ยอดและ partial เป็นค่าล่าสุด ไม่รวมแค่ 50 แถวบนหน้าจอ และไม่แปลง 0 เป็น unknown
 
 Hard link มีหลาย path ชี้ข้อมูลเดียวกัน การรวมตาม path อาจนับซ้ำ; ผลรวมไฟล์ยังอาจขาดส่วนที่ไม่มีสิทธิ์เข้าถึงและ metadata ระบบ จึงไม่เท่ากับพื้นที่ใช้ทั้ง volume
 
@@ -99,14 +100,17 @@ Hard link มีหลาย path ชี้ข้อมูลเดียวก�
 |---|---|---|
 | โหลดไดรฟ์ | GET /api/drives | array ของไดรฟ์รูปแบบเดิม มี path |
 | Scan | POST /api/scans, body {path} | id และ state |
-| สถานะ | GET /api/scans/{id} | state, counts, elapsedSeconds, partial |
-| กาง/เลือก/เพิ่มเติม | GET /api/scans/{id}/children?parent=...&offset=...&limit=50 | items, totalChildren, hasMore, partial |
+| สถานะ | GET /api/scans/{id} | state, counts, elapsedSeconds, partial, error |
+| กาง/เลือก/เพิ่มเติม | GET /api/scans/{id}/children?parent=...&offset=...&limit=50 | folder, items, totalChildren, hasMore, partial |
+| รายละเอียดปัญหา | GET /api/scans/{id}/issues?offset=...&limit=50 | items, totalIssues, hasMore |
 | Cancel | POST /api/scans/{id}/cancel | cancelling แล้ว status เป็น cancelled |
 | Reveal | POST /api/reveal, body {scanId,relativePath} | {status:"revealed"} หรือ HTTP error |
 
 HTTP error ใช้ `{code,detail}`; ข้อมูลชื่อไฟล์แสดงเป็น text ผ่าน Vue interpolation ไม่ใช้ `v-html`
 
-รายละเอียดปัญหา: CONTRACT มี counts แต่ยังไม่มี schema สำหรับ error รายรายการ หน้าเว็บรองรับ `errors:[{relativePath,code,message}]` และ `skipped:[{relativePath,reason}]` หาก backend ส่งมา (ส่วนเสริมที่เสนอ ยังไม่ใช่สัญญาบังคับ) หากไม่ส่งจะบอกตรง ๆ ว่าไม่มีรายละเอียด ต้องตกลงกับปวริศช์ก่อนถือว่าผ่านเกณฑ์นี้
+รายละเอียดปัญหาโหลดจาก `/issues` เมื่อกางช่องรายละเอียด: แสดง relativePath, issueType, code และ message ครั้งละไม่เกิน 50 รายการ หากโหลดต่อผิดพลาดจะเก็บรายการเดิมไว้และให้ลองใหม่ เมื่อเปลี่ยนงาน/จำนวนปัญหา/งานจบจะล้าง cache ปัญหา และทิ้ง response จากงานเก่า
+
+แยก `status.error` ซึ่งเป็นเหตุผลสแกนล้มเหลว (แม้ HTTP 200) ออกจาก HTTP error `{code,detail}` หน้าเว็บแสดงทั้งตอน polling และเปิดผลเดิม
 
 การล้าง cache ฝั่ง SQLite เป็นงาน backend และยังไม่มี endpoint ใน CONTRACT ปุ่มล้างประวัติหน้าเว็บจึงลบเฉพาะรหัสงานใน localStorage ไม่อ้างว่าล้าง SQLite หรือไฟล์ผู้ใช้
 
@@ -127,7 +131,7 @@ HTTP error ใช้ `{code,detail}`; ข้อมูลชื่อไฟล์
 - Cancel หยุด process จริง ไม่ใช่เปลี่ยนเฉพาะ status
 - Reveal เปิด Explorer บนเครื่องนำเสนอจริง
 - full-drive สแกนจบ, เวลา/รายการต่อวินาที/peak memory จากการวัดจริง
-- เพิ่มหรือยืนยัน schema รายละเอียด error และวิธีล้าง cache
+- ตกลงวิธีล้าง SQLite cache หากทีมต้องการเพิ่ม endpoint
 - เพื่อนกด Scan/Cancel/Reveal และซ้อมนำเสนอร่วมกัน 2 รอบ
 
 ## แหล่งอ่านสำหรับตอบคำถาม OS

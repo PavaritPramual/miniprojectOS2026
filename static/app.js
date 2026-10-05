@@ -81,15 +81,18 @@ createApp({
       epoch = 0,
       statusBusy = false;
     const active = computed(() => ACTIVE_STATES.has(job.value?.state));
-    const root = computed(() => ({
-      relativePath: "",
-      name: job.value?.rootPath || "โฟลเดอร์",
-      kind: "directory",
-      logicalBytes: null,
-      allocatedBytes: null,
-      partial: true,
-      hasChildren: true,
-    }));
+    const root = computed(
+      () =>
+        pages[""]?.folder || {
+          relativePath: "",
+          name: job.value?.rootPath || "โฟลเดอร์",
+          kind: "directory",
+          logicalBytes: null,
+          allocatedBytes: null,
+          partial: true,
+          hasChildren: true,
+        },
+    );
     const currentPage = computed(
       () => pages[selected.value?.relativePath ?? ""],
     );
@@ -102,22 +105,78 @@ createApp({
         path: parts.slice(0, index + 1).join("/"),
       }));
     });
-    const issueDetails = computed(() => [
-      ...(Array.isArray(job.value?.errors)
-        ? job.value.errors.map((x) => ({
-            path: x.relativePath,
-            message: x.message || x.detail || x.code,
-          }))
-        : []),
-      ...(Array.isArray(job.value?.skipped)
-        ? job.value.skipped.map((x) => ({
-            path: x.relativePath,
-            message: x.reason,
-          }))
-        : []),
-    ]);
+    const selectedFolder = computed(
+      () => currentPage.value?.folder || selected.value,
+    );
+    const issues = reactive({
+      items: [],
+      offset: 0,
+      totalIssues: 0,
+      hasMore: false,
+      loaded: false,
+      loading: false,
+      error: "",
+    });
+    const issuesOpen = ref(false);
+    let issueEpoch = 0;
+    function resetIssues() {
+      issueEpoch++;
+      Object.assign(issues, {
+        items: [],
+        offset: 0,
+        totalIssues: 0,
+        hasMore: false,
+        loaded: false,
+        loading: false,
+        error: "",
+      });
+    }
+    async function loadIssues() {
+      if (!job.value || issues.loading || (issues.loaded && !issues.hasMore))
+        return;
+      const generation = issueEpoch,
+        id = job.value.id,
+        offset = issues.offset;
+      issues.loading = true;
+      issues.error = "";
+      try {
+        const result = await api.issues(id, offset);
+        if (generation !== issueEpoch || id !== job.value?.id) return;
+        if (
+          result.scanId !== id ||
+          result.offset !== offset ||
+          result.limit !== 50 ||
+          !Array.isArray(result.items) ||
+          result.items.length > 50 ||
+          !Number.isSafeInteger(result.totalIssues) ||
+          result.totalIssues < offset + result.items.length ||
+          typeof result.hasMore !== "boolean" ||
+          (result.hasMore && !result.items.length) ||
+          result.items.some((item) =>
+            [item.relativePath, item.code, item.message, item.issueType].some(
+              (value) => typeof value !== "string",
+            ),
+          )
+        )
+          throw new Error("รายละเอียดปัญหาไม่ตรง CONTRACT");
+        issues.items.push(...result.items);
+        issues.offset += result.items.length;
+        issues.totalIssues = result.totalIssues;
+        issues.hasMore = result.hasMore;
+        issues.loaded = true;
+      } catch (err) {
+        if (generation === issueEpoch) issues.error = err.message;
+      } finally {
+        if (generation === issueEpoch) issues.loading = false;
+      }
+    }
+    function toggleIssues(event) {
+      issuesOpen.value = event.target.open;
+      if (issuesOpen.value && !issues.loaded) loadIssues();
+    }
     function newPage() {
       return {
+        folder: null,
         items: [],
         offset: 0,
         totalChildren: 0,
@@ -212,7 +271,16 @@ createApp({
         throw new Error(
           "ข้อมูลรายการลูกไม่ตรง CONTRACT (parent / offset / limit / hasMore)",
         );
-      for (const item of result.items) {
+      const folder = result.folder;
+      if (
+        !folder ||
+        folder.relativePath !== parent ||
+        folder.kind !== "directory" ||
+        typeof folder.partial !== "boolean" ||
+        typeof folder.hasChildren !== "boolean"
+      )
+        throw new Error("ข้อมูลโฟลเดอร์ไม่ตรง CONTRACT");
+      for (const item of [folder, ...result.items]) {
         if (
           typeof item.relativePath !== "string" ||
           typeof item.name !== "string" ||
@@ -251,6 +319,7 @@ createApp({
         page.totalChildren = result.totalChildren;
         page.hasMore = result.hasMore;
         page.partial = !!result.partial;
+        page.folder = result.folder;
         page.loaded = true;
       } catch (err) {
         if (generation === epoch) page.error = err.message;
@@ -278,6 +347,7 @@ createApp({
     });
     function findNode(path) {
       if (!path) return root.value;
+      if (pages[path]?.folder) return pages[path].folder;
       for (const page of Object.values(pages)) {
         const node = page.items.find((x) => x.relativePath === path);
         if (node) return node;
@@ -324,8 +394,18 @@ createApp({
         const result = await api.status(id);
         if (id !== job.value?.id) return;
         validateStatus(result, id);
+        const issuesChanged =
+          job.value.errorCount !== result.errorCount ||
+          job.value.skippedCount !== result.skippedCount;
         job.value = result;
         error.value = "";
+        if (
+          issuesChanged ||
+          (ACTIVE_STATES.has(previous) && !ACTIVE_STATES.has(result.state))
+        ) {
+          resetIssues();
+          if (issuesOpen.value) await loadIssues();
+        }
         if (ACTIVE_STATES.has(previous) && !ACTIVE_STATES.has(result.state)) {
           // Final sorting can change page boundaries: invalidate all loaded pages.
           await refreshVisible();
@@ -359,6 +439,7 @@ createApp({
           throw new Error("คำตอบเริ่มงานไม่ตรง CONTRACT");
         stopPoll();
         resetPages();
+        resetIssues();
         for (const key of Object.keys(expanded)) delete expanded[key];
         job.value = {
           ...result,
@@ -428,11 +509,13 @@ createApp({
         validateStatus(result, id);
         stopPoll();
         resetPages();
+        resetIssues();
         for (const key of Object.keys(expanded)) delete expanded[key];
         job.value = result;
         selected.value = root.value;
         targetPath.value = result.rootPath;
         await initialTree();
+        if (issuesOpen.value) await loadIssues();
         saveHistory();
         notice.value = "เปิดผลที่เก็บไว้แล้ว — ผลนี้ไม่ใช่การสแกนใหม่";
         if (active.value) timer = setTimeout(refreshStatus, 2000);
@@ -483,6 +566,7 @@ createApp({
     onUnmounted(() => {
       stopPoll();
       epoch++;
+      issueEpoch++;
     });
     return {
       mock,
@@ -507,7 +591,11 @@ createApp({
       currentPage,
       currentItems,
       breadcrumbs,
-      issueDetails,
+      selectedFolder,
+      issues,
+      issuesOpen,
+      loadIssues,
+      toggleIssues,
       treeView,
       STATES,
       formatBytes,

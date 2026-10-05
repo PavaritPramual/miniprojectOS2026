@@ -1,12 +1,12 @@
 # บทพูดและแผนเดโมของธีรเมธ
 
-สถานะ: 4 ต.ค. 2569 — UI ผ่าน simulator; ยังต้องรวม backend บน Windows ก่อนอ้างผลจริง
+สถานะ: 5 ต.ค. 2569 — ทดสอบ UI กับ Python HTTP/SQLite ด้วยข้อมูลทดสอบ; C/WSL และ Windows ยังต้องยืนยัน
 
 ## หน้า 1 — CoreSpace
 
 ผู้พูด ธีรเมธ · 45 วินาที
 
-เริ่มว่า เราต้องการรู้ว่าโฟลเดอร์ไหนใช้พื้นที่มาก จึงทำเว็บให้เลือกโฟลเดอร์ ดูรายการและขนาดได้ งานแบ่งเป็นศรัณย์ทำ C, ปวริศช์ทำ Python bridge และธีรเมธทำ UI ภาพประกอบนี้เป็นภาพรัน UI จริงกับ simulator ไม่ใช่ผลสแกนจาก C/WSL วันนำเสนอ 9 ตุลาคม 2569 เวลา 13:00 น. สถานะเอกสาร ณ 4 ตุลาคม 2569
+เริ่มว่า เราต้องการรู้ว่าโฟลเดอร์ไหนใช้พื้นที่มาก จึงทำเว็บให้เลือกโฟลเดอร์ ดูรายการและขนาดได้ งานแบ่งเป็นศรัณย์ทำ C, ปวริศช์ทำ Python bridge และธีรเมธทำ UI ภาพประกอบนี้เป็นภาพรัน UI จริงกับ simulator ไม่ใช่ผลสแกนจาก C/WSL วันนำเสนอ 9 ตุลาคม 2569 เวลา 13:00 น. สถานะเอกสาร ณ 5 ตุลาคม 2569
 
 ## หน้า 2 — Directory, metadata และ IPC
 
@@ -19,14 +19,14 @@ opendir/readdir/closedir เป็นฟังก์ชัน libc ไม่ค�
 
 ผู้พูด ศรัณย์ · 60 วินาที
 
-นี่คือสถาปัตยกรรมเป้าหมายตาม CONTRACT ไม่ใช่คำรับรองว่า backend รุ่นนี้ทำครบ POST /api/scans คืน id ก่อน scan จบ จากนั้นหน้าเว็บขอ GET /api/scans/{id} และ children Python ต้องแปลง path จาก D:\demo เป็น /mnt/d/demo ตรวจ relativePath และแยก stderr จาก stdout JSON เป็นรูปแบบข้อมูล HTTP กับ pipe เป็นช่องทางสื่อสาร
+Python bridge และ SQLite รวมใน checkout แล้ว ทดสอบ Browser → Python → SQLite ด้วยข้อมูลทดสอบ ส่วน C/WSL และ Windows ต้องยืนยันบนเครื่องนำเสนอ POST /api/scans คืน id ก่อน scan จบ จากนั้นหน้าเว็บขอ GET /api/scans/{id} และ children Python ต้องแปลง path จาก D:\demo เป็น /mnt/d/demo ตรวจ relativePath และแยก stderr จาก stdout JSON เป็นรูปแบบข้อมูล HTTP กับ pipe เป็นช่องทางสื่อสาร
 แหล่งอ้างอิง: docs/CONTRACT.md, docs/UI_HANDOFF.md และ https://docs.python.org/3/library/subprocess.html
 
 ## หน้า 4 — Logical กับ Allocated
 
 ผู้พูด ปวริศช์ · 60 วินาที
 
-ไม่ใช้สูตรปัด cluster แทนค่าที่วัด และไม่เรียก Allocated ลบ Logical ว่า Slack เสมอ UI แสดงค่าจาก backend โฟลเดอร์ต้องรวมจากผลทั้งโฟลเดอร์ ไม่ใช่แค่ 50 แถวบนจอ CONTRACT ยังไม่ระบุ root totals จึงแสดงไม่ทราบแทนการเดา ตอนนำเสนอให้ปวริศช์แสดงไฟล์ที่ตรวจเทียบ Windows จริงหนึ่งไฟล์ ปัจจุบันยังไม่มีหลักฐานนั้นในชุดส่งนี้
+ไม่ใช้สูตรปัด cluster แทนค่าที่วัด และไม่เรียก Allocated ลบ Logical ว่า Slack เสมอ UI แสดงค่าจาก backend โฟลเดอร์ต้องรวมจากผลทั้งโฟลเดอร์ ไม่ใช่แค่ 50 แถวบนจอ ยอด root และโฟลเดอร์ที่เลือกอ่านจาก children.folder ตาม API ล่าสุด หลังสแกนจบจะโหลด metadata ใหม่ ค่า 0 แสดง 0 B ส่วน null แสดงไม่ทราบ ตอนนำเสนอให้ปวริศช์แสดงไฟล์ที่ตรวจเทียบ Windows จริงหนึ่งไฟล์ ปัจจุบันยังไม่มีหลักฐานนั้นในชุดส่งนี้
 แหล่งอ้างอิง: https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getcompressedfilesizew และ docs/SPEC.md
 
 ## หน้า 5 — กางลึกได้ และดูรายการครบ
@@ -45,7 +45,7 @@ opendir/readdir/closedir เป็นฟังก์ชัน libc ไม่ค�
 
 ผู้พูด ปวริศช์ · 70 วินาที
 
-ผลอัตโนมัติอยู่ docs/ui-evidence/results.json และ http-results.json ไม่ใช่ผลรัน scanner จริง หลักฐาน screenshots แสดงชัดว่าโหมด mock ต้องให้ทุกคนลอง Scan/Cancel/Reveal หลังรวมงาน ทดสอบ full-drive จริง เก็บเวลาและหน่วยความจำ แล้วปรับสไลด์นี้ตามหลักฐานก่อนนำเสนอ ไม่อ้างเร็วขึ้นหรือแม่นยำกว่าต้นแบบโดยไม่มีผลวัด
+ผลอัตโนมัติอยู่ docs/ui-evidence/results.json, http-results.json และ review-results.json ชุด review ใช้ Python HTTP กับ SQLite จริงและข้อมูลทดสอบ แก้ยอด root, รายละเอียด issues และ status.error แล้ว ไม่ใช่ผลรัน scanner จริง หลักฐาน screenshots แสดงชัดว่าโหมด mock ต้องให้ทุกคนลอง Scan/Cancel/Reveal หลังรวมงาน ทดสอบ full-drive จริง เก็บเวลาและหน่วยความจำ แล้วปรับสไลด์นี้ตามหลักฐานก่อนนำเสนอ ไม่อ้างเร็วขึ้นหรือแม่นยำกว่าต้นแบบโดยไม่มีผลวัด
 
 ## ซ้อมตอบคำถามสั้น ๆ ของธีรเมธ
 
@@ -63,7 +63,7 @@ opendir/readdir/closedir เป็นฟังก์ชัน libc ไม่ค�
 
 **ทำไม null ไม่เป็น 0?** null หมายถึงอ่านไม่ได้หรือยังสรุปไม่ได้ แต่ 0 หมายถึงขนาดที่วัดได้เป็นศูนย์
 
-**อะไรที่พิสูจน์แล้ว?** ดู results.json และ http-results.json เป็นหลักฐาน UI กับ HTTP จำลอง ส่วน Windows/WSL/full-drive ยังรอรวมงาน
+**อะไรที่พิสูจน์แล้ว?** ดู results.json, http-results.json และ review-results.json เป็นหลักฐาน UI, HTTP จำลอง และ Python/SQLite กับข้อมูลทดสอบ ส่วน Windows/WSL/full-drive ยังรอรวมงาน
 
 ## ก่อนนำเสนอจริง
 

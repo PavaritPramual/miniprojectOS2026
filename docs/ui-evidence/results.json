@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-04",
+  "date": "2026-10-05T12:22:02.253Z",
   "scope": "Browser UI simulation; not C/WSL/Windows integration",
   "results": [
     {
@@ -47,7 +47,7 @@
       "result": "PASS"
     },
     {
-      "name": "Real adapter reports missing new backend truthfully",
+      "name": "Real adapter displays HTTP error detail",
       "result": "PASS"
     }
   ],

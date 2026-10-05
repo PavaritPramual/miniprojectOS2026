@@ -51,6 +51,10 @@
         request(
           `/api/scans/${encodeURIComponent(id)}/children?${new URLSearchParams({ parent, offset, limit: 50 })}`,
         ),
+      issues: (id, offset) =>
+        request(
+          `/api/scans/${encodeURIComponent(id)}/issues?${new URLSearchParams({ offset, limit: 50 })}`,
+        ),
       cancel: (id) =>
         request(`/api/scans/${encodeURIComponent(id)}/cancel`, {
           method: "POST",

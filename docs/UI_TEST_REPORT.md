@@ -1,75 +1,61 @@
 # ผลตรวจงานหน้าเว็บของธีรเมธ
 
-วันที่ 4 ตุลาคม 2569 · branch `feature/theeramet-ui`
+วันที่ 5 ตุลาคม 2569 · branch `feature/theeramet-ui` · แก้รีวิว PR #1
 
-## ขอบเขตและผล
+## ผลทดสอบหน้าเว็บ
 
-ผ่าน 20 กลุ่มทดสอบอัตโนมัติ: 12 กลุ่มกด UI ในโหมด mock และ 8 กลุ่มใช้ HTTP fixtures จำลอง นอกจากนี้ตรวจปุ่ม/คีย์บอร์ดสไลด์ HTML 7 หน้า และตรวจโครงสร้าง/การจัดวาง PPTX 7 หน้าแล้ว
+ผ่าน 27 กลุ่ม: UI simulator 12 กลุ่ม, HTTP fixtures 8 กลุ่ม และ Python HTTP/SQLite จริงกับข้อมูลทดสอบ 7 กลุ่ม ไม่มี JavaScript page error ในทั้งสามชุด
 
-ทดสอบด้วย Chromium headless บน Linux โดยใช้ Python server ต้นแบบในเครื่อง ไม่ใช่ผลทดสอบ C, WSL, Windows Allocated, Explorer จริง หรือ full-drive benchmark
+| ชุด | หลักฐาน | ขอบเขต |
+|---|---|---|
+| UI simulator | `ui-evidence/results.json` | แสดงเพิ่ม 50+10, tree ถึงชั้น 8, unknown/0, Cancel, Reveal, เปิดผลเดิม, offline assets และมือถือ |
+| HTTP fixtures | `ui-evidence/http-results.json` | ส่ง request ตามสัญญา, คำตอบช้า, retry, HTTP error และโหลดลำดับใหม่เมื่องานจบ; metadata อ้างรูปแบบ `docs/examples/api.json` ล่าสุด |
+| Python/SQLite | `ui-evidence/review-results.json` | ใช้ handler, ScanManager และ ScanStore ของโปรเจกต์จริงบน localhost กับฐานข้อมูลชั่วคราว |
 
-## รายการที่ตรวจ
+การตรวจ PR ทั้ง 7 กรณี:
 
-| กลุ่มทดสอบ | ผล |
-|---|---|
-| Partial status / no console crash / first 50 rows | PASS |
-| Table pagination 50 + 10 without duplicates | PASS |
-| Unknown / zero / compressed size / skipped link | PASS |
-| Reveal error and success are visible | PASS |
-| Tree pagination includes directories after item 50 | PASS |
-| Depth 8 / collapse / expand / breadcrumb navigation | PASS |
-| Empty directory / Thai names and spaces | PASS |
-| Cancel keeps partial results and allows next scan | PASS |
-| Failed scan status is shown | PASS |
-| Completed scan and saved-result resume | PASS |
-| Required path / offline assets / mobile layout | PASS |
-| Real adapter reports missing new backend truthfully | PASS |
-| POST path, async status and bounded children requests | PASS |
-| Failed next page preserves existing rows; retry loads once | PASS |
-| Slow response for A does not replace selected B | PASS |
-| Status error retains UI; retry recovers | PASS |
-| Cancel HTTP error remains visible | PASS |
-| Terminal reordering resets previous pagination | PASS |
-| Reveal sends scanId + relativePath and honors HTTP error | PASS |
-| Next job does not keep old folder rows; successful cancellation | PASS |
+1. root ที่เสร็จแล้วแสดง Logical/Allocated 1 MiB และครบถ้วนจาก `children.folder`
+2. root ว่างแสดง 0 B ทั้งสองค่า
+3. โหลด `/issues` หน้าแรก 50 รายการ แล้วจำลอง HTTP 503 ของหน้าถัดไป; retry ได้ครบ 60 โดยไม่ซ้ำและไม่ทิ้งรายการเดิม แสดง path/type/code/message
+4. เปิดงาน failed เดิมเห็น `status.error` และล้างปัญหาของงานก่อนหน้า
+5. polling จาก running → failed เห็นเหตุผลจาก `status.error`
+6. โฟลเดอร์ย่อยที่เลือกอยู่และ root เปลี่ยนยอดจาก unknown เป็น 1 MiB หลังงานเสร็จ
+7. response ของ issues หน้าถัดไปที่มาช้าไม่ปนกับงานใหม่
 
-## หลักฐาน
+ฐานข้อมูลทดสอบสร้างจากข้อมูลที่กำหนดไว้และลบอัตโนมัติ ไม่อ่านหรือแก้ฐานข้อมูลผู้ใช้ ไม่ได้รัน C/WSL หรือวัด allocation ของ Windows ภาพ `review-failed.png` แสดง UI ที่รับ failed status ผ่าน Python จริง ส่วนภาพ 01–04 เป็น simulator
 
-- `ui-evidence/results.json` — ผล UI พร้อมการตรวจ console error และการร้องขอแหล่งภายนอก
-- `ui-evidence/http-results.json` — ผล HTTP fixtures พร้อม method/path/query/body ที่หน้าเว็บส่ง
-- `ui-evidence/01-root.png` — หน้าแรก 50 รายการจาก mock
-- `ui-evidence/02-depth-eight.png` — tree ถึงชั้น 8
-- `ui-evidence/03-cancelled.png` — ยกเลิกงานตัวอย่าง
-- `ui-evidence/04-mobile.png` — หน้าจอกว้าง 390 px ไม่มีการล้นทั้งหน้า
+## สิ่งที่แก้ตามรีวิว
 
-ภาพทั้งหมดเป็น UI ที่รันจริงกับข้อมูลสมมติ มีการระบุโหมด mock บนหน้า ไม่ใช่หลักฐานสแกนไฟล์จริง
+- เก็บ `children.folder` ตาม path และใช้กับ root/โฟลเดอร์ที่เลือก; ขอใหม่เมื่องานจบ
+- แยกโหลด `/issues` ครั้งละ 50 พร้อม loading, error, retry และป้องกันคำตอบเก่า
+- แสดงเหตุผลสแกนล้มเหลวจาก `status.error`; HTTP error ยังคงอ่าน `{code,detail}`
+- ปรับ mock, HTTP fixtures, คู่มือ, บทพูดและสไลด์ให้ตรง API ล่าสุด
 
-## สิ่งที่เปลี่ยน
+แก้เฉพาะหน้าเว็บ เอกสาร และเครื่องมือทดสอบ ไม่มีการแก้ `main.py` หรือ `backend/`
 
-ปรับหน้าเว็บให้ใช้สัญญาใหม่และใช้ adapter เดียวกันสำหรับ API จริงกับ simulator เพิ่มสถานะงาน, pagination ทั้ง tree/table, Cancel, Reveal ที่ตรวจ HTTP status, เปิดผลเดิมด้วย scan id, ข้อผิดพลาดที่ retry ได้, unknown/partial และป้องกัน response เก่าทับโฟลเดอร์ใหม่ เก็บ Vue เวอร์ชัน 3.5.13 กับ CSS ไว้ในเครื่อง เอาสูตร/การ์ด Slack ออกจาก UI
+## ผลชุดทดสอบ backend เดิมบน Linux
 
-คงธีมกระดาษสีครีมของโครงการ รองรับมือถือและ keyboard focus พร้อมเอกสารอธิบาย OS, บทพูด, สไลด์ HTML และ PPTX
+รัน `python3 -m unittest discover -v`: 21 กรณี, ผ่าน 14, ข้าม 5, ไม่ผ่าน 2 กรณีที่มีสมมติฐานของ Windows:
 
-## สถานะ Git และขอบเขตการแก้
+- `test_latest_real_and_reveal`: fixture ใช้ path ชั่วคราวของ Linux แต่ `/latest` รับ absolute path ของไดรฟ์ Windows จึงตอบ 400 และ test อ่าน `id` ไม่ได้
+- `test_whole_drive_guard_and_no_automatic_sample`: backend ตรวจ Windows ก่อน guard ทั้งไดรฟ์ บน Linux จึงตอบ 503 แทน 409 ที่ test คาดไว้
 
-ไฟล์แก้ไขอยู่ในเครื่องบน branch `feature/theeramet-ui` ยังไม่ได้ commit หรือ push ตรวจว่า `main.py` และ `backend/` ไม่มี diff การแก้อยู่ใน `static/`, เอกสาร/สไลด์/ภาพหลักฐาน และเครื่องมือทดสอบ UI
+ทั้งสองกรณีอยู่ในโค้ด backend/tests ที่ไม่ได้แก้ในงานนี้ ไม่ถือว่าชุด backend ผ่านทั้งหมด ต้องให้ทีมตรวจซ้ำบน Windows ส่วน 5 กรณีที่ข้ามต้องใช้ Windows allocation หรือเปิด WSL tests
 
-## สิ่งที่ยังไม่ผ่านการยืนยัน
+## สิ่งที่ยังต้องยืนยันบนเครื่องนำเสนอ
 
-1. Backend ใหม่ใน checkout ยังไม่มี `/api/scans`; โหมดจริงแจ้ง error ตามจริง
-2. ต้องเชื่อม C/WSL และทดสอบบน Windows ก่อนนำเสนอว่าระบบจริงเสร็จ
-3. รายละเอียด error รายไฟล์กับวิธีล้าง SQLite cache ยังไม่มีสัญญา endpoint ครบ ปุ่มล้างประวัติ UI ลบเฉพาะ localStorage
-4. ยอด root ไม่อยู่ในสัญญาปัจจุบัน UI แสดงไม่ทราบ แทนการรวมเพียงแถวที่โหลดมา
-5. การอ้างว่าเร็วขึ้น, full-drive จบ, allocation แม่นยำ หรือ Cancel หยุด C จริง ต้องมีผลวัดจากเพื่อน/เครื่องนำเสนอ
-6. PPTX ตรวจด้วยตัวอ่านและ renderer ของเครื่องมือ ยังไม่ได้เปิดใน Microsoft PowerPoint; ควรลองบนเครื่องนำเสนอและตรวจฟอนต์ Noto Sans Thai
+C/WSL จริง, Windows Allocated, Cancel หยุด process, Explorer และ full-drive benchmark ยังไม่ถูกยืนยันจากการทดสอบรอบนี้ การเปิดผลด้วยรหัสมีแล้ว ส่วน UI เลือก Python sample และค้นหาผลล่าสุดผ่าน `/latest` ยังเป็นงานเชื่อมต่อเพิ่มเติม
+
+สไลด์ PPTX ตรวจด้วยเครื่องมือสร้างและ renderer ไม่ได้ตรวจใน Microsoft PowerPoint ควรเปิดและตรวจฟอนต์บนเครื่องนำเสนอ
 
 ## รันทดสอบซ้ำ
 
-เปิด Python server ของโปรเจกต์ก่อน แล้วใช้ Node.js ที่มีแพ็กเกจ Playwright และ Chromium พร้อมใช้งาน:
+ติดตั้ง Node.js + Playwright/Chromium สำหรับผู้พัฒนา เปิด Python server ก่อนสำหรับสองชุดแรก:
 
 ```bash
 node tools/ui-check.cjs
 node tools/ui-contract-check.cjs
+node tools/ui-review-check.cjs
 ```
 
-ตั้ง `NODE_PATH` ถ้า Playwright ไม่ได้อยู่ใน node_modules ของโปรเจกต์ และตั้ง `PLAYWRIGHT_BROWSERS_PATH` ถ้า browser อยู่ตำแหน่งอื่น ใช้ `CORESPACE_URL` เปลี่ยนค่า URL จากค่าเริ่มต้น `http://127.0.0.1:8080` การทดสอบไม่จำเป็นต่อการเปิดใช้งานหน้าเว็บตามปกติ
+สองชุดแรกใช้ `CORESPACE_URL` (ค่าเริ่มต้น `http://127.0.0.1:8080`) ชุด review เปิด Python server และฐานข้อมูลชั่วคราวเอง ใช้ `PYTHON` กำหนด interpreter ได้ ตั้ง `NODE_PATH` และ `PLAYWRIGHT_BROWSERS_PATH` หากแพ็กเกจ/browser อยู่ที่อื่น ไม่ต้องมีเครื่องมือเหล่านี้เพื่อเปิดหน้าเว็บตามปกติ

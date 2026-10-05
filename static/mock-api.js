@@ -169,27 +169,37 @@
         job.partial = ["partial", "cancelled", "failed"].includes(job.state);
         job.errorCount = job.state === "partial" ? 1 : 0;
         job.skippedCount = job.state === "partial" ? 1 : 0;
-        job.detail = job.state === "failed" ? "จำลอง: scanner หยุดทำงาน" : "";
-        job.errors =
+        job.error = job.state === "failed" ? "จำลอง: scanner หยุดทำงาน" : null;
+        return copy(job);
+      },
+      async issues(id, offset) {
+        await pause();
+        check(id);
+        const all =
           job.state === "partial"
             ? [
                 {
                   relativePath: "อ่านไม่ได้.txt",
                   code: "ACCESS_DENIED",
                   message: "จำลอง: ไม่มีสิทธิ์อ่านพื้นที่จัดสรร",
+                  issueType: "error",
                 },
-              ]
-            : [];
-        job.skipped =
-          job.state === "partial"
-            ? [
                 {
                   relativePath: "loop-link",
-                  reason: "จำลอง: ไม่ตาม symbolic link",
+                  code: "SYMLINK_SKIPPED",
+                  message: "จำลอง: ไม่ตาม symbolic link",
+                  issueType: "skipped",
                 },
               ]
             : [];
-        return copy(job);
+        return {
+          scanId: id,
+          offset,
+          limit: 50,
+          totalIssues: all.length,
+          hasMore: offset + 50 < all.length,
+          items: all.slice(offset, offset + 50),
+        };
       },
       async children(id, parent, offset) {
         await pause();
@@ -214,6 +224,17 @@
           totalChildren: source.length,
           hasMore: offset + items.length < source.length,
           partial: job.state !== "completed",
+          folder: {
+            ...directory(parent, parent.split("/").pop() || job.rootPath),
+            logicalBytes: source.some((x) => x.logicalBytes === null)
+              ? null
+              : source.reduce((sum, x) => sum + x.logicalBytes, 0),
+            allocatedBytes: source.some((x) => x.allocatedBytes === null)
+              ? null
+              : source.reduce((sum, x) => sum + x.allocatedBytes, 0),
+            partial: source.some((x) => x.partial),
+            hasChildren: source.length > 0,
+          },
           items,
         };
       },

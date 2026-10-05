@@ -93,6 +93,7 @@ const path = require("node:path");
         /ไม่เดินต่อ/,
       );
       await page.getByText("ดูเหตุผลที่ข้อมูลไม่ครบ", { exact: true }).click();
+      await page.locator(".issues li").first().waitFor();
       assert.match(await text(".status"), /ACCESS|ไม่มีสิทธิ์/);
     });
     await check("Reveal error and success are visible", async () => {
@@ -124,13 +125,11 @@ const path = require("node:path");
         await page.waitForFunction(() =>
           document.querySelector(".table-tools")?.textContent.includes("50"),
         );
-        const treeBranch = page
-          .locator("li")
-          .filter({
-            has: page
-              .locator(".tree-name")
-              .filter({ hasText: /^▱ many-folders$/ }),
-          });
+        const treeBranch = page.locator("li").filter({
+          has: page
+            .locator(".tree-name")
+            .filter({ hasText: /^▱ many-folders$/ }),
+        });
         await page
           .getByRole("button", { name: "แสดงเพิ่มเติมใน tree", exact: true })
           .last()
@@ -270,18 +269,22 @@ const path = require("node:path");
         true,
       );
     });
-    await check(
-      "Real adapter reports missing new backend truthfully",
-      async () => {
-        await page.goto(base + "/");
-        await page.getByLabel("ตำแหน่งโฟลเดอร์").fill("D:\\demo");
-        await page.getByRole("button", { name: "Scan", exact: true }).click();
-        await page
-          .getByRole("alert")
-          .filter({ hasText: /Backend ยังไม่มี|HTTP 404/ })
-          .waitFor();
-      },
-    );
+    await check("Real adapter displays HTTP error detail", async () => {
+      await page.route("**/api/scans", (route) =>
+        route.fulfill({
+          status: 503,
+          contentType: "application/json",
+          body: JSON.stringify({ code: "TEST", detail: "REVIEW_HTTP_ERROR" }),
+        }),
+      );
+      await page.goto(base + "/");
+      await page.getByLabel("ตำแหน่งโฟลเดอร์").fill("D:\\demo");
+      await page.getByRole("button", { name: "Scan", exact: true }).click();
+      await page
+        .getByRole("alert")
+        .filter({ hasText: /REVIEW_HTTP_ERROR/ })
+        .waitFor();
+    });
     assert.deepEqual(consoleErrors, []);
   } catch (err) {
     results.push({ name: "Run stopped", result: "FAIL", detail: err.stack });
@@ -296,7 +299,7 @@ const path = require("node:path");
       path.join(evidence, "results.json"),
       JSON.stringify(
         {
-          date: "2026-10-04",
+          date: new Date().toISOString(),
           scope: "Browser UI simulation; not C/WSL/Windows integration",
           results,
           consoleErrors,
