@@ -5,6 +5,7 @@ Every record is also passed through the real validators in backend.scan_manager.
 """
 import json
 import os
+import resource
 import shutil
 import signal
 import subprocess
@@ -25,10 +26,11 @@ CAN_RUN = (sys.platform.startswith("linux") and shutil.which("make")
            and (shutil.which("cc") or shutil.which("gcc")) and shutil.which("sh"))
 
 
-def run(binary, root, *extra, prefix=(), timeout=60):
+def run(binary, root, *extra, prefix=(), timeout=60, max_fds=None):
     """Runs the scanner; returns (exit code, list of parsed records, stdout text, stderr text)."""
     cmd = list(prefix) + [str(binary), "--root", str(root), "--ndjson", *extra]
-    result = subprocess.run(cmd, capture_output=True, timeout=timeout)
+    limit = (lambda: resource.setrlimit(resource.RLIMIT_NOFILE, (max_fds, max_fds))) if max_fds else None
+    result = subprocess.run(cmd, capture_output=True, timeout=timeout, preexec_fn=limit)
     stdout = result.stdout.decode("utf-8")  # strict: the stream must be valid UTF-8
     lines = stdout.split("\n")
     assert lines[-1] == "", "stdout must end with a newline"
@@ -118,12 +120,13 @@ class CScannerCase(unittest.TestCase):
         sample = [json.loads(line) for line in SAMPLE.read_text(encoding="utf-8").splitlines() if line.strip()]
         self.assertEqual(facts(records), facts(sample))
 
-    def test_output_is_deterministic_and_trailing_slash_is_ignored(self):
+    def test_same_records_every_run_and_trailing_slash_is_ignored(self):
+        # Names are printed in the order the filesystem returns them (not sorted), so compare as sets.
         _, _, first, _ = run(self.binary, self.demo)
         _, _, second, _ = run(self.binary, self.demo)
         _, _, slashed, _ = run(self.binary, str(self.demo) + "/")
-        self.assertEqual(first, second)
-        self.assertEqual(first, slashed)
+        self.assertEqual(sorted(first.split("\n")), sorted(second.split("\n")))
+        self.assertEqual(sorted(first.split("\n")), sorted(slashed.split("\n")))
 
     def test_empty_folder_and_zero_byte_file(self):
         root = self.make_tree("empty-root")
@@ -158,6 +161,47 @@ class CScannerCase(unittest.TestCase):
         self.assertEqual(code, 0)
         done = self.assert_contract(records)
         self.assertEqual((done["fileCount"], done["directoryCount"]), (1, 41))
+
+    def test_folders_nested_past_the_open_directory_limit(self):
+        """Below 32 levels subdirectories are queued instead of entered; counts must still be exact."""
+        root = self.make_tree("queued")
+        cursor = root
+        for level in range(36):
+            cursor = cursor / f"d{level}"
+        cursor.mkdir(parents=True)
+        for sibling in range(5):  # several queued siblings at the deepest level
+            (cursor / f"s{sibling}").mkdir()
+            (cursor / f"s{sibling}" / "f.txt").write_text("ab")
+        (cursor / "a.txt").write_text("abc")
+        code, records, _, _ = run(self.binary, root)
+        self.assertEqual(code, 0)
+        done = self.assert_contract(records)
+        self.assertEqual((done["fileCount"], done["directoryCount"]), (6, 1 + 36 + 5))
+        self.assertEqual(sum(r["logicalBytes"] for r in records[:-1]), 3 + 5 * 2)
+
+    def test_deep_tree_needs_only_a_few_file_descriptors(self):
+        root = self.make_tree("fd-limit")
+        cursor = root
+        for level in range(150):
+            cursor = cursor / f"d{level}"
+        cursor.mkdir(parents=True)
+        (cursor / "leaf.txt").write_text("x")
+        code, records, _, stderr = run(self.binary, root, max_fds=40)  # stdio + 33 open dirs at most
+        self.assertEqual((code, stderr), (0, ""))
+        done = self.assert_contract(records)
+        self.assertEqual((done["fileCount"], done["directoryCount"], done["errorCount"]), (1, 151, 0))
+
+    def test_wide_folders(self):
+        root = self.make_tree("wide")
+        for number in range(3000):
+            (root / f"f{number}.txt").write_text("x")
+        for number in range(200):
+            (root / f"sub{number}").mkdir()
+            (root / f"sub{number}" / "g.txt").write_text("yy")
+        code, records, _, _ = run(self.binary, root)
+        self.assertEqual(code, 0)
+        done = self.assert_contract(records)
+        self.assertEqual((done["fileCount"], done["directoryCount"]), (3200, 201))
 
     def test_problem_cases_are_reported_not_hidden(self):
         root = self.base / "issues"

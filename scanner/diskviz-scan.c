@@ -342,37 +342,57 @@ static void emit_errno(const char *operation, int err)
 
 /* ---------- directory walk ---------- */
 
-typedef struct {
-    char **v;
-    size_t n, cap;
-} NameList;
+/*
+ * Records are printed as soon as readdir() returns each name, so memory does not
+ * grow with the number of files in a directory (a folder with millions of files
+ * is read with a constant amount of memory) and results start flowing at once.
+ *
+ * A subdirectory is entered right away while its parent is still open, but only
+ * MAX_OPEN_DIRS levels deep, so we never run out of file descriptors on a deep
+ * tree. Below that level the subdirectories are queued (name + device/inode) and
+ * entered after the parent is closed. Only that queue uses memory proportional
+ * to the number of subdirectories, and only for directories nested deeper than
+ * MAX_OPEN_DIRS levels.
+ *
+ * Names come out in the order the filesystem returns them (not sorted). A
+ * directory is always printed before anything inside it.
+ */
+#define MAX_OPEN_DIRS 32
 
-static void names_add(NameList *l, const char *name)
+typedef struct {
+    char *name;
+    dev_t dev;
+    ino_t ino;
+} Pending;
+
+typedef struct {
+    Pending *v;
+    size_t n, cap;
+} PendingList;
+
+static void pending_add(PendingList *l, const char *name, dev_t dev, ino_t ino)
 {
     if (l->n == l->cap) {
-        size_t cap = l->cap ? l->cap * 2 : 64;
-        char **v = realloc(l->v, cap * sizeof *v);
+        size_t cap = l->cap ? l->cap * 2 : 16;
+        Pending *v = realloc(l->v, cap * sizeof *v);
         if (!v)
             die_oom();
         l->v = v;
         l->cap = cap;
     }
-    l->v[l->n] = strdup(name);
-    if (!l->v[l->n])
+    l->v[l->n].name = strdup(name);
+    if (!l->v[l->n].name)
         die_oom();
+    l->v[l->n].dev = dev;
+    l->v[l->n].ino = ino;
     l->n++;
 }
 
-static void names_free(NameList *l)
+static void pending_free(PendingList *l)
 {
     for (size_t i = 0; i < l->n; i++)
-        free(l->v[i]);
+        free(l->v[i].name);
     free(l->v);
-}
-
-static int cmp_names(const void *a, const void *b)
-{
-    return strcmp(*(char *const *)a, *(char *const *)b);
 }
 
 static void anc_push(dev_t dev, ino_t ino)
@@ -407,9 +427,35 @@ static int name_supported(const char *name)
     return name[0] != '\0' && strchr(name, '\\') == NULL && utf8_valid(name);
 }
 
-static void walk_dir(void);
+/* Appends "/name" to the absolute path and the relative path (no leading '/' at the root). */
+static void push_path(const char *name, size_t *abs_mark, size_t *rel_mark)
+{
+    *abs_mark = S.abs.len;
+    *rel_mark = S.rel.len;
+    buf_append(&S.abs, "/", 1);
+    buf_append(&S.abs, name, strlen(name));
+    if (*rel_mark)
+        buf_append(&S.rel, "/", 1);
+    buf_append(&S.rel, name, strlen(name));
+}
 
-static void handle_child(const char *name, size_t parent_len)
+static void pop_path(size_t abs_mark, size_t rel_mark)
+{
+    buf_truncate(&S.abs, abs_mark);
+    buf_truncate(&S.rel, rel_mark);
+}
+
+static void walk_dir(int depth);
+
+static void enter_dir(dev_t dev, ino_t ino, int depth)
+{
+    anc_push(dev, ino);
+    walk_dir(depth);
+    S.anc_len--;
+}
+
+/* S.abs / S.rel already name the child. depth is the depth of the directory that contains it. */
+static void handle_child(const char *name, size_t parent_len, int depth, PendingList *later)
 {
     struct stat st;
 
@@ -437,9 +483,10 @@ static void handle_child(const char *name, size_t parent_len)
         } else {
             emit_entry(name, parent_len, "directory", 0);
             S.dirs++;
-            anc_push(st.st_dev, st.st_ino);
-            walk_dir();
-            S.anc_len--;
+            if (depth < MAX_OPEN_DIRS)
+                enter_dir(st.st_dev, st.st_ino, depth + 1);
+            else
+                pending_add(later, name, st.st_dev, st.st_ino);
         }
     } else if (S_ISLNK(st.st_mode)) {
         emit_entry(name, parent_len, "link", 0);
@@ -450,13 +497,12 @@ static void handle_child(const char *name, size_t parent_len)
     }
 }
 
-/* Lists the directory named by S.abs/S.rel and handles each child, sorted by name. */
-static void walk_dir(void)
+/* Reads the directory named by S.abs/S.rel and reports each child as it is read. */
+static void walk_dir(int depth)
 {
-    NameList names = {0};
+    PendingList later = {0};
     struct dirent *e;
     int read_err;
-    size_t seen = 0;
     DIR *d;
 
     check_output();
@@ -468,6 +514,8 @@ static void walk_dir(void)
         return;
     }
     for (;;) {
+        size_t abs_mark, rel_mark;
+
         errno = 0;
         e = readdir(d);
         if (!e)
@@ -475,36 +523,27 @@ static void walk_dir(void)
         if (e->d_name[0] == '.' &&
             (e->d_name[1] == '\0' || (e->d_name[1] == '.' && e->d_name[2] == '\0')))
             continue;
-        names_add(&names, e->d_name);
-        if ((++seen & 1023) == 0)
-            check_output();
+
+        check_output();
+        push_path(e->d_name, &abs_mark, &rel_mark);
+        handle_child(e->d_name, rel_mark, depth, &later);
+        pop_path(abs_mark, rel_mark);
     }
     read_err = errno;
-    closedir(d); /* no descriptor stays open while we go deeper */
+    closedir(d);
 
     if (read_err)
         emit_errno("readdir", read_err);
 
-    if (names.n > 1) /* qsort(NULL, 0, ...) is undefined, so skip empty directories */
-        qsort(names.v, names.n, sizeof *names.v, cmp_names); /* same output on every run */
-
-    for (size_t i = 0; i < names.n; i++) {
-        size_t abs_mark = S.abs.len;
-        size_t rel_mark = S.rel.len;
+    for (size_t i = 0; i < later.n; i++) { /* deep levels: parent is closed now */
+        size_t abs_mark, rel_mark;
 
         check_output();
-        buf_append(&S.abs, "/", 1);
-        buf_append(&S.abs, names.v[i], strlen(names.v[i]));
-        if (rel_mark)
-            buf_append(&S.rel, "/", 1);
-        buf_append(&S.rel, names.v[i], strlen(names.v[i]));
-
-        handle_child(names.v[i], rel_mark);
-
-        buf_truncate(&S.abs, abs_mark);
-        buf_truncate(&S.rel, rel_mark);
+        push_path(later.v[i].name, &abs_mark, &rel_mark);
+        enter_dir(later.v[i].dev, later.v[i].ino, depth + 1);
+        pop_path(abs_mark, rel_mark);
     }
-    names_free(&names);
+    pending_free(&later);
 }
 
 /* ---------- command line ---------- */
@@ -617,7 +656,7 @@ int main(int argc, char **argv)
     S.dirs = 1; /* directoryCount includes the root */
     flush_out(); /* the consumer saves the root straight away */
 
-    walk_dir();
+    walk_dir(0);
 
     complete = (S.errors == 0 && S.skipped == 0);
     fprintf(stdout,
