@@ -1,0 +1,114 @@
+{
+  "issues": {
+    "scanId": "421b2568c0ea4615bcc976d7cf5a54cd",
+    "offset": 0,
+    "limit": 50,
+    "totalIssues": 1,
+    "hasMore": false,
+    "items": [
+      {
+        "relativePath": "back-to-root",
+        "code": "symlink",
+        "message": "ข้ามรายการนี้",
+        "issueType": "skipped"
+      }
+    ]
+  },
+  "status": {
+    "id": "421b2568c0ea4615bcc976d7cf5a54cd",
+    "rootPath": "D:\\673380278-9\\2569\\OS\\project\\fixtures\\generated\\real-web-demo",
+    "source": "wsl",
+    "isSample": false,
+    "state": "partial",
+    "fileCount": 64,
+    "directoryCount": 13,
+    "errorCount": 0,
+    "skippedCount": 1,
+    "elapsedSeconds": 2.89,
+    "partial": true,
+    "error": null
+  },
+  "root": {
+    "scanId": "421b2568c0ea4615bcc976d7cf5a54cd",
+    "parent": "",
+    "offset": 0,
+    "limit": 50,
+    "totalChildren": 7,
+    "hasMore": false,
+    "partial": true,
+    "folder": {
+      "relativePath": "",
+      "name": "real-web-demo",
+      "kind": "directory",
+      "logicalBytes": 1048645,
+      "allocatedBytes": 1048645,
+      "partial": true,
+      "hasChildren": true
+    },
+    "items": [
+      {
+        "relativePath": "large.bin",
+        "name": "large.bin",
+        "kind": "file",
+        "logicalBytes": 1048576,
+        "allocatedBytes": 1048576,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many",
+        "name": "many",
+        "kind": "directory",
+        "logicalBytes": 60,
+        "allocatedBytes": 60,
+        "partial": true,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "ชื่อ ไทย",
+        "name": "ชื่อ ไทย",
+        "kind": "directory",
+        "logicalBytes": 5,
+        "allocatedBytes": 5,
+        "partial": true,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "depth",
+        "name": "depth",
+        "kind": "directory",
+        "logicalBytes": 4,
+        "allocatedBytes": 4,
+        "partial": true,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "empty",
+        "name": "empty",
+        "kind": "directory",
+        "logicalBytes": 0,
+        "allocatedBytes": 0,
+        "partial": true,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "zero.bin",
+        "name": "zero.bin",
+        "kind": "file",
+        "logicalBytes": 0,
+        "allocatedBytes": 0,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "back-to-root",
+        "name": "back-to-root",
+        "kind": "link",
+        "logicalBytes": 0,
+        "allocatedBytes": null,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  }
+}
