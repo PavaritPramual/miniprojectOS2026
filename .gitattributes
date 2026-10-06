@@ -1,0 +1,5 @@
+# Files that run inside WSL (Linux) must keep LF line endings even when checked out on Windows.
+# A CRLF Makefile or shell script fails with "missing separator" / "\r: command not found".
+# Scoped to the new C scanner files only; existing files are not affected.
+scanner/** text eol=lf
+tools/make_demo_fixture.sh text eol=lf
