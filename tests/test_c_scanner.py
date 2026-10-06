@@ -5,7 +5,6 @@ Every record is also passed through the real validators in backend.scan_manager.
 """
 import json
 import os
-import resource
 import shutil
 import signal
 import subprocess
@@ -29,7 +28,13 @@ CAN_RUN = (sys.platform.startswith("linux") and shutil.which("make")
 def run(binary, root, *extra, prefix=(), timeout=60, max_fds=None):
     """Runs the scanner; returns (exit code, list of parsed records, stdout text, stderr text)."""
     cmd = list(prefix) + [str(binary), "--root", str(root), "--ndjson", *extra]
-    limit = (lambda: resource.setrlimit(resource.RLIMIT_NOFILE, (max_fds, max_fds))) if max_fds else None
+    limit = None
+    if max_fds:
+        import resource  # POSIX only: importing it at the top would break `unittest discover` on Windows
+
+        def limit():
+            resource.setrlimit(resource.RLIMIT_NOFILE, (max_fds, max_fds))
+
     result = subprocess.run(cmd, capture_output=True, timeout=timeout, preexec_fn=limit)
     stdout = result.stdout.decode("utf-8")  # strict: the stream must be valid UTF-8
     lines = stdout.split("\n")
