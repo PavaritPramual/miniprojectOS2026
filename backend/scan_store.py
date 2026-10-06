@@ -320,7 +320,7 @@ class ScanStore:
     def list_children(self, scan_id: str, parent: str, offset: int, limit: int) -> Optional[Dict[str, Any]]:
         with self._connect() as db:
             db.execute("BEGIN")  # Counts, state and page must describe one snapshot.
-            scan = db.execute("SELECT state FROM scans WHERE id=?", (scan_id,)).fetchone()
+            scan = db.execute("SELECT state, root_path FROM scans WHERE id=?", (scan_id,)).fetchone()
             if scan is None:
                 return None
             active = scan["state"] in {"queued", "running", "cancelling"}
@@ -334,6 +334,17 @@ class ScanStore:
                 (scan_id, parent),
             ).fetchone()
             if folder_row is None:
+                if parent == "" and active:
+                    # The selected root is known before WSL starts. Its contents
+                    # and totals remain unknown until the scanner sends records.
+                    return {
+                        "scanId": scan_id, "parent": "", "offset": offset, "limit": limit,
+                        "totalChildren": 0, "hasMore": False, "partial": False,
+                        "folder": {"relativePath": "", "name": ntpath.basename(scan["root_path"].rstrip("\\/")) or scan["root_path"],
+                                   "kind": "directory", "logicalBytes": None, "allocatedBytes": None,
+                                   "partial": False, "hasChildren": False},
+                        "items": [],
+                    }
                 return None
             count_row = db.execute(
                 "SELECT COUNT(*) AS n FROM entries WHERE scan_id=? AND parent_relative_path=?",

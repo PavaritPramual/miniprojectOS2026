@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Target = (Join-Path $PSScriptRoot '..\fixtures\generated\demo'),
     [switch]$IncludeJunction
 )

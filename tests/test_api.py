@@ -82,6 +82,17 @@ class ApiTests(BackendCase):
             for thread in threads: thread.join(2)
         self.assertEqual(len(calls), 1)
 
+    def test_root_is_available_while_waiting_for_scanner(self):
+        self.store.create_scan("waiting", str(self.root), "wsl", False)
+        code, page = self.request("GET", "/api/scans/waiting/children?parent=&limit=50")
+        self.assertEqual(code, 200)
+        self.assertEqual(page["items"], [])
+        self.assertIsNone(page["folder"]["logicalBytes"])
+        self.assertIsNone(page["folder"]["allocatedBytes"])
+        self.assertEqual(self.request("GET", "/api/scans/waiting/children?parent=absent")[0], 404)
+        self.store.finish_scan("waiting", "failed", "scanner did not send root")
+        self.assertEqual(self.request("GET", "/api/scans/waiting/children?parent=")[0], 404)
+
     def test_status_and_cancel_respond_while_producer_is_silent(self):
         release = threading.Event()
         original = self.manager._consume_stream
