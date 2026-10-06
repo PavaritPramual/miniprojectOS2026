@@ -7,7 +7,7 @@
 > **วันนำเสนอ:** 9 ตุลาคม 2569 (13:00 น.) | เวลาบรรยาย 5–10 นาที  
 > **กลุ่ม:** ผู้ก้าวข้ามโชคชะตาด้วยมือของตัวเอง  
 > **สมาชิกกลุ่ม:**  
-> 1. นายศรัณย์ พาพรชัย (673380515-5) — Backend Engine & Win32 Concurrency  
+> 1. นายศรัณย์ พาพรชัย (673380515-1) — Backend Engine & Win32 Concurrency  
 > 2. นายปวริศช์ ประมวล (673380278-9) — OS Storage Mechanics & Slack Space Calculation  
 > 3. นายธีรเมธ สายคำ (673380273-9) — Frontend UI, TreeSize Model & Presentation Delivery  
 
