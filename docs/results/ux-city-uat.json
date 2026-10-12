@@ -1,0 +1,71 @@
+{
+  "source": "Actual Windows Python and WSL C; no mocked API responses",
+  "scanId": "daeef8691abc4ad6b46c1527cb1234ab",
+  "checks": [
+    {
+      "name": "Normal interface has no mock, browser history, bar chart or duplicate tree",
+      "result": "PASS"
+    },
+    {
+      "name": "Scan actual C shows real progress events and completes 64 files / 13 folders",
+      "result": "PASS"
+    },
+    {
+      "name": "City has file names, file types and windows on real building faces",
+      "result": "PASS"
+    },
+    {
+      "name": "Mouse can select a named small building, not only hover",
+      "result": "PASS"
+    },
+    {
+      "name": "Click persists file identity and actions after hover leaves",
+      "result": "PASS"
+    },
+    {
+      "name": "Real database search finds a file beyond loaded page and announces pending/result",
+      "result": "PASS"
+    },
+    {
+      "name": "List is an alternative view and selected row is reachable",
+      "result": "PASS"
+    },
+    {
+      "name": "Search page 50 + 10 works and empty result is announced",
+      "result": "PASS"
+    },
+    {
+      "name": "Return to city, rotate, zoom and reset are functional",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile retains the inspector and fits the screen",
+      "result": "PASS"
+    },
+    {
+      "name": "Stored real scan reopens without any browser history control",
+      "result": "PASS"
+    },
+    {
+      "name": "Reveal executes through the real Windows API and reports result",
+      "result": "PASS"
+    },
+    {
+      "name": "Cancel has actual progress log and allows a new scan",
+      "result": "PASS"
+    },
+    {
+      "name": "Search API treats wildcard characters literally and rejects empty queries",
+      "result": "PASS"
+    },
+    {
+      "name": "Even an explicit sample-result URL cannot display experimental data",
+      "result": "PASS"
+    },
+    {
+      "name": "New design renders actual project files for visual review",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

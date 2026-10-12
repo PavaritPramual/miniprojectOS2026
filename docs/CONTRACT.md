@@ -48,6 +48,7 @@ Python ต้องตรวจ schema/path/count ก่อนบันทึก
 
 | คำขอ | ผลสำเร็จ | กรณีผิดพลาดที่ต้องส่ง |
 | --- | --- | --- |
+| `GET /api/scans/{id}/search?q=...&offset=0&limit=50` | `{scanId,query,items,total,offset,hasMore,partial}` ใช้ item แบบเดียวกับ children | `400 INVALID_QUERY/INVALID_PAGE`, `404` เมื่อไม่พบ scan |
 | `POST /api/scans` body `{ "path": "D:\\demo" }` | `202 {"id":"scan-...","state":"queued","source":"wsl"}` | `400` path ผิด, `409` มี full-drive scan อีกงาน, `503` ยังไม่ตั้งค่า C/WSL |
 | `GET /api/scans/{id}` | สถานะและ counts ตามตัวอย่าง | `404` ไม่มี id |
 | `GET /api/scans/latest?path=<Windows-path>` | สถานะของผลจริงล่าสุดที่เป็น `completed` หรือ `partial` ใช้รูปแบบเดียวกับ status | `400` path ไม่ใช่ตำแหน่งเต็มในไดรฟ์เครื่องนี้, `404` ไม่มีผลจริง |
