@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 from backend.scan_manager import ScanManager, ScanError
 from backend.scan_store import ScanStore
-from backend.allocated_size import get_allocated_file_size
+from backend.allocated_size import get_allocated_file_size, allocation_error_message
 from tools.generate_examples import entry, demo_records
 
 
@@ -54,6 +54,40 @@ class BackendCase(unittest.TestCase):
 
 
 class BackendTests(BackendCase):
+    @unittest.skipUnless(os.name == "nt", "Windows error diagnostics")
+    def test_allocation_errors_show_specific_reason_and_code(self):
+        for code, expected in ((5, "ไม่อนุญาต"), (32, "โปรแกรมอื่น"), (1920, "เข้าถึงไฟล์นี้ไม่ได้")):
+            with self.subTest(code=code), patch("backend.allocated_size.ctypes.get_last_error", return_value=code):
+                message = allocation_error_message()
+                self.assertIn(expected, message)
+                self.assertIn(str(code), message)
+
+    def test_duplicate_records_keep_path_and_do_not_double_count(self):
+        for padding in (0, 128):
+            with self.subTest(padding=padding):
+                records = [entry("", "directory"), entry("repeat.txt", "file", 5)]
+                records += [entry(f"other{i}", "file", 1) for i in range(padding)]
+                records += [entry("repeat.txt", "file", 5)]
+                scan_id, status = self.sample(finish(records))
+                issues = self.manager.get_issues(scan_id, 0, 50)["items"]
+                self.assertEqual(status["fileCount"], padding + 1)
+                self.assertEqual(status["state"], "partial")
+                self.assertEqual(self.store.get_folder(scan_id, "")["logicalBytes"], padding + 5)
+                self.assertEqual([(i["code"], i["relativePath"]) for i in issues], [("DUPLICATE_ENTRY", "repeat.txt")])
+
+    @unittest.skipUnless(os.name == "nt", "Windows long path metadata")
+    def test_long_path_actual_allocation(self):
+        folder = self.root
+        for i in range(6):
+            folder = folder / (f"level{i}-" + "x" * 40)
+        extended = "\\\\?\\" + str(folder)
+        os.makedirs(extended)
+        path = folder / "file.bin"
+        with open("\\\\?\\" + str(path), "wb") as stream:
+            stream.write(b"real contents")
+        self.assertGreater(len(str(path)), 260)
+        self.assertIsNotNone(get_allocated_file_size(str(path)))
+
     def test_130_and_10000_files_cross_batches(self):
         for count in (130, 10000):
             with self.subTest(count=count):

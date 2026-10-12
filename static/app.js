@@ -116,7 +116,7 @@ createApp({
     const issuesOpen = ref(false);
     function issueReason(issue) {
       const reasons={symlink:'ไม่เดินตามลิงก์ เพื่อป้องกันการอ่านวนกลับ',directory_loop:'โฟลเดอร์นี้เคยอ่านแล้ว จึงข้ามเพื่อไม่อ่านวน',special_file:'รายการนี้ไม่ใช่ไฟล์หรือโฟลเดอร์ปกติ',ALLOCATED_SIZE_UNKNOWN:'Windows อ่านพื้นที่บนดิสก์ของไฟล์นี้ไม่ได้'};
-      return reasons[issue.code]||issue.message;
+      return issue.code==='ALLOCATED_SIZE_UNKNOWN' ? issue.message : reasons[issue.code]||issue.message;
     }
     let issueEpoch = 0;
     function resetIssues() {

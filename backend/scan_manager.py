@@ -13,7 +13,7 @@ from collections import OrderedDict
 from typing import Any, Dict, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
 
-from backend.allocated_size import get_allocated_file_size
+from backend.allocated_size import get_allocated_file_size, allocation_error_message
 from backend.scan_store import ScanStore
 
 
@@ -463,8 +463,17 @@ class ScanManager:
                 try:
                     entry = self._validate_entry(record, source)
                     rel = entry["relativePath"]
+                    # done counts describe records emitted by C, not unique
+                    # rows retained in SQLite. Duplicate records remain issues.
+                    if entry["kind"] == "file":
+                        actual_files += 1
+                    elif entry["kind"] == "directory":
+                        actual_dirs += 1
                     if rel in pending_paths:
-                        raise ValueError("พบ relativePath ซ้ำ")
+                        buffered.append(self._issue_record(rel, "DUPLICATE_ENTRY", "โปรแกรมส่งตำแหน่งนี้ซ้ำ เก็บรายการแรกและไม่รวมขนาดซ้ำ", "error"))
+                        if len(buffered) >= 128:
+                            flush_batch()
+                        continue
                     parent = entry["parentRelativePath"]
                     if parent is not None:
                         parent_kind = pending_paths.get(parent)
@@ -483,7 +492,7 @@ class ScanManager:
                         entry["allocatedBytes"] = allocated
                         if allocated is None:
                             entry["partial"] = True
-                            buffered.append(self._issue_record(rel, "ALLOCATED_SIZE_UNKNOWN", "Windows อ่านพื้นที่ที่ไฟล์ใช้บนดิสก์ไม่ได้", "error"))
+                            buffered.append(self._issue_record(rel, "ALLOCATED_SIZE_UNKNOWN", allocation_error_message(), "error"))
                     elif source == "sample" and entry["kind"] == "file":
                         entry["allocatedBytes"] = record.get("allocatedBytes")
                     buffered.append(dict(entry, type="entry"))
@@ -493,12 +502,8 @@ class ScanManager:
                     if rel == "":
                         root_seen = True
                         flush_batch()
-                    if entry["kind"] == "file":
-                        actual_files += 1
-                    elif entry["kind"] == "directory":
-                        actual_dirs += 1
                 except ValueError as exc:
-                    buffered.append(self._issue_record("", "INVALID_ENTRY", str(exc), "error"))
+                    buffered.append(self._issue_record(self._safe_issue_path(record.get("relativePath")), "INVALID_ENTRY", str(exc), "error"))
             elif record_type == "error":
                 actual_errors += 1
                 rel = self._safe_issue_path(record.get("relativePath"))
