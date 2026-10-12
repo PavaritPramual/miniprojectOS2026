@@ -8,6 +8,7 @@ const path = require("node:path");
   const page = await browser.newPage({
     viewport: { width: 1400, height: 950 },
   });
+  fs.mkdirSync(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, '../docs/ui-evidence'), {recursive:true});
   const base = process.env.CORESPACE_URL || "http://127.0.0.1:8080";
   const examples = JSON.parse(
     fs.readFileSync(path.join(__dirname, "../docs/examples/api.json"), "utf8"),
@@ -253,7 +254,7 @@ const path = require("node:path");
           .click();
         await page
           .getByRole("status")
-          .filter({ hasText: "เซิร์ฟเวอร์ยืนยัน" })
+          .filter({ hasText: "ส่งคำสั่งเปิดตำแหน่ง" })
           .waitFor();
       },
     );

@@ -1,0 +1,83 @@
+{
+  "source": "Actual Windows Python API and WSL C; no request interception",
+  "scanId": "23a97320a7464e309354408863f472cc",
+  "checks": [
+    {
+      "name": "Scan button runs actual C and returns 64 files / 13 directories",
+      "result": "PASS"
+    },
+    {
+      "name": "Choose district, show real details and enter folder",
+      "result": "PASS"
+    },
+    {
+      "name": "Load city next page: 50 + 10 items, no duplicate buildings",
+      "result": "PASS"
+    },
+    {
+      "name": "Building selection and show-in-table locate the actual file",
+      "result": "PASS"
+    },
+    {
+      "name": "Map / city, rotate, zoom and reset change the view",
+      "result": "PASS"
+    },
+    {
+      "name": "Pointer drag and wheel really pan and zoom the scene",
+      "result": "PASS"
+    },
+    {
+      "name": "Name/type filters find files without changing byte sizes",
+      "result": "PASS"
+    },
+    {
+      "name": "Size selector uses actual logical values and restores allocation view",
+      "result": "PASS"
+    },
+    {
+      "name": "Latest-result button opens real stored scan after page reload",
+      "result": "PASS"
+    },
+    {
+      "name": "Saved scan link opens real data and synchronizes the drive selector",
+      "result": "PASS"
+    },
+    {
+      "name": "Zero-byte item remains selectable and is not assigned disk area",
+      "result": "PASS"
+    },
+    {
+      "name": "Reveal button sends a real successful Windows Explorer command",
+      "result": "PASS"
+    },
+    {
+      "name": "Real C cancellation stops within 15 seconds and permits next scan",
+      "result": "PASS"
+    },
+    {
+      "name": "Actual skipped junction reason appears and tree/refresh still work",
+      "result": "PASS"
+    },
+    {
+      "name": "Missing saved result reports the actual error",
+      "result": "PASS"
+    },
+    {
+      "name": "Invalid path gives a real server error, no sample fallback",
+      "result": "PASS"
+    },
+    {
+      "name": "City and original controls fit mobile width",
+      "result": "PASS"
+    },
+    {
+      "name": "Saved history can reopen a scan and clear only browser history",
+      "result": "PASS"
+    },
+    {
+      "name": "Project documents create a city from everyday files, not demo data",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

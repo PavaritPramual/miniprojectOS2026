@@ -242,14 +242,14 @@ const path = require("node:path");
         .click();
       await page
         .getByRole("status")
-        .filter({ hasText: "เปิดผลที่เก็บไว้แล้ว" })
+        .filter({ hasText: "เปิดผลที่บันทึกไว้แล้ว" })
         .waitFor();
       await page
         .getByRole("button", { name: "ล้างประวัติในเบราว์เซอร์" })
         .click();
       await page
         .getByRole("status")
-        .filter({ hasText: "ล้างประวัติในเบราว์เซอร์แล้ว" })
+        .filter({ hasText: "ล้างประวัติแล้ว" })
         .waitFor();
     });
     await check("Required path / offline assets / mobile layout", async () => {

@@ -7,8 +7,8 @@ Members:
 2. นายปวริศช์ ประมวล (673380278-9)
 3. นายธีรเมธ สายคำ (673380273-9)
 
-Architecture: Zero-Dependency Lightweight Client-Server (Pure Python Standard Library)
-Serves static UI and REST API for high-performance disk analysis.
+Runs the local Windows web server and API. Real scans use C in WSL;
+Python stores scan records and reads Windows file allocation metadata.
 """
 
 import http.server
