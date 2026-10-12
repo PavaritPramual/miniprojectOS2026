@@ -69,7 +69,7 @@ readlink -f ~/.local/bin/diskviz-scan
 
 ## สถานะและข้อจำกัด
 
-ระบบหลัก C → Python → เว็บรวมเข้า main แล้ว ส่วน UX เมืองไฟล์ การแก้รับข้อมูล และสไลด์ล่าสุดอยู่ใน [PR #7](https://github.com/PavaritPramual/miniprojectOS2026/pull/7) ซึ่งยังเปิดรอ merge ณ 12 ตุลาคม 2569
+ระบบหลักใช้ C → Python → เว็บ ดูการปรับ UX เมืองไฟล์ การแก้รับข้อมูล และสไลด์ล่าสุดใน [PR #7](https://github.com/PavaritPramual/miniprojectOS2026/pull/7) อัปเดต 12 ตุลาคม 2569
 
 | สิ่งที่ตรวจ | ผลและหลักฐาน |
 | --- | --- |
