@@ -8,6 +8,8 @@
     <script defer src="/static/vendor/vue-3.5.13.global.prod.js"></script>
     <script defer src="/static/api.js"></script>
     <script defer src="/static/mock-api.js"></script>
+    <script defer src="/static/vendor/d3-hierarchy-3.1.2.min.js"></script>
+    <script defer src="/static/file-city.js"></script>
     <script defer src="/static/size-bars.js"></script>
     <script defer src="/static/app.js"></script>
   </head>
@@ -15,19 +17,18 @@
     <div id="app" v-cloak>
       <header class="topbar">
         <div>
-          <span class="eyebrow">/corespace</span>
-          <h1>พื้นที่ของคุณ อยู่ตรงไหน</h1>
-          <p class="muted">สำรวจโฟลเดอร์และขนาดไฟล์ ภายในเครื่องของคุณ</p>
+          <h1>CoreSpace</h1>
+          <p class="muted">ดูพื้นที่ไฟล์และโฟลเดอร์ในเครื่อง</p>
         </div>
-        <a :href="mock ? '/' : '/?mock=1'" class="mode-link"
-          >{{ mock ? 'ใช้ข้อมูลจริง →' : 'ลองข้อมูลตัวอย่าง →' }}</a
+        <a v-if="mock" href="/" class="mode-link"
+          >กลับข้อมูลจริง →</a
         >
       </header>
       <main class="shell">
         <div v-if="mock" class="mock-banner">
           <strong>โหมดทดสอบ UI · ข้อมูลสมมติ</strong
           ><span
-            >ไม่ได้อ่านไฟล์จริง ไม่ได้เรียก C/WSL และไม่ใช่ผล benchmark</span
+            >ใช้สำหรับลองหน้าจอ ไม่ได้อ่านไฟล์ในเครื่อง</span
           >
         </div>
         <form class="controls panel" @submit.prevent="startScan">
@@ -80,12 +81,13 @@
             {{ cancelBusy || job?.state === 'cancelling' ? 'กำลังยกเลิก…' :
             'Cancel' }}
           </button>
+          <button v-if="!mock" type="button" @click="resumeLatest" :disabled="!targetPath.trim() || !apiReady || active || starting || latestBusy">{{latestBusy?'กำลังเปิดผล…':'เปิดผลล่าสุดของตำแหน่งนี้'}}</button>
           <p v-if="driveError" class="error full">
             {{ driveError }}
             <button type="button" @click="loadDrives">ลองโหลดไดรฟ์ใหม่</button>
           </p>
           <p v-else-if="apiReady && !drives.length" class="muted small full">
-            ไม่มีไดรฟ์ที่ backend รายงาน คุณยังกรอกตำแหน่งโฟลเดอร์ได้
+            ไม่พบไดรฟ์ คุณยังกรอกตำแหน่งโฟลเดอร์ได้
           </p>
         </form>
         <div v-if="error" role="alert" class="message error">
@@ -95,7 +97,6 @@
         <div v-if="notice" role="status" class="message">{{ notice }}</div>
         <section v-if="job" class="status panel" aria-live="polite">
           <div>
-            <span class="eyebrow">/scan-status</span>
             <h2>
               <span :class="['state-dot', {moving: active}]"></span>{{
               STATES[job.state] }}
@@ -140,8 +141,8 @@
             </p>
             <ul v-if="issues.items.length">
               <li v-for="(issue, i) in issues.items" :key="i">
-                <code>{{ issue.relativePath || '(root)' }}</code> — {{
-                issue.issueType }} / {{ issue.code }}: {{ issue.message }}
+                <code>{{ issue.relativePath || '(โฟลเดอร์เริ่มต้น)' }}</code> — {{issue.issueType==='skipped'?'ข้าม':'อ่านไม่ได้'}} · {{issueReason(issue)}}
+                <small class="muted"> ({{issue.code}})</small>
               </li>
             </ul>
             <p v-if="issues.loaded">
@@ -161,7 +162,6 @@
         </section>
         <div v-if="job" class="workspace">
           <aside class="panel tree-panel">
-            <span class="eyebrow">/directory-tree</span>
             <h2>โครงสร้างโฟลเดอร์</h2>
             <p class="muted small">กางได้ตามความลึกจริง · โหลดทีละ 50 รายการ</p>
             <ul class="tree">
@@ -171,7 +171,6 @@
           <section class="panel contents">
             <div class="folder-head">
               <div>
-                <span class="eyebrow">/selected-folder</span>
                 <h2>{{ selectedFolder?.name }}</h2>
               </div>
               <button @click="reveal(selected)" :disabled="revealBusy !== null">
@@ -210,6 +209,7 @@
                 >
               </div>
             </div>
+            <file-city :items="currentItems" :pages="pages" :folder="selectedFolder" :active="active" :loading="currentPage?.loading" :has-more="currentPage?.hasMore" :error="currentPage?.error" :reveal-busy="revealBusy" @open="select" @reveal="reveal" @more="loadChildren(selected.relativePath)" @inspect="inspectItem"></file-city>
             <section class="size-chart" aria-labelledby="size-chart-title">
               <div class="chart-heading">
                 <h3 id="size-chart-title">ไฟล์และโฟลเดอร์ไหนใช้พื้นที่มาก</h3>
@@ -264,7 +264,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in currentItems" :key="item.relativePath">
+                  <tr v-for="item in currentItems" :key="item.relativePath" :data-path="item.relativePath" :class="{'inspected-row': inspectedPath === item.relativePath}">
                     <td>
                       <button
                         v-if="item.kind === 'directory'"
@@ -300,7 +300,7 @@
                   <tr v-if="!currentItems.length && !currentPage?.loading">
                     <td colspan="5" class="empty">
                       {{ currentPage?.error ? 'โหลดรายการไม่สำเร็จ' : active ?
-                      'ยังไม่มีรายการที่สแกนพบ' : 'ไม่มีรายการในโฟลเดอร์นี้' }}
+                      'ยังไม่มีรายการที่สแกนพบ' : selectedFolder?.partial ? 'ไม่มีรายการที่อ่านได้ ดูเหตุผลด้านบน' : 'ไม่มีรายการในโฟลเดอร์นี้' }}
                     </td>
                   </tr>
                 </tbody>
@@ -325,15 +325,13 @@
           </section>
         </div>
         <section v-else class="empty panel">
-          <span class="eyebrow">/ready-to-explore</span>
-          <h2>เริ่มจากโฟลเดอร์ที่อยากรู้จัก</h2>
+          <h2>เลือกโฟลเดอร์ที่จะสแกน</h2>
           <p>กรอกตำแหน่งแล้วกด Scan เพื่อดูขนาดและรายการข้างใน</p>
         </section>
         <details class="panel saved">
           <summary>เปิดผลสแกนที่เตรียมไว้</summary>
           <p class="small muted">
-            เก็บเฉพาะรหัสงานในเบราว์เซอร์ ผลจริงอยู่ที่ backend หาก backend ล้าง
-            cache จะเปิดรหัสเดิมไม่ได้
+            เปิดรายการที่เคยสแกนไว้ในเครื่อง หรือกรอกตำแหน่งด้านบนแล้วกดเปิดผลล่าสุด
           </p>
           <form @submit.prevent="resume(resumeId)" class="resume-form">
             <label

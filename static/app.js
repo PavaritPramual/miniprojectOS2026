@@ -1,5 +1,5 @@
 /* CoreSpace UI — ธีรเมธ. See docs/UI_HANDOFF.md for the OS/data flow. */
-const { createApp, ref, reactive, computed, onMounted, onUnmounted } = Vue;
+const { createApp, ref, reactive, computed, onMounted, onUnmounted, watch } = Vue;
 const ACTIVE_STATES = new Set(["queued", "running", "cancelling"]);
 const STATES = {
   queued: "รอคิว",
@@ -55,7 +55,7 @@ const TreeFolder = {
   </li>`,
 };
 createApp({
-  components: { TreeFolder },
+  components: { TreeFolder, FileCity },
   setup() {
     const mock = new URLSearchParams(location.search).get("mock") === "1";
     const apiReady = ref(false),
@@ -66,11 +66,37 @@ createApp({
       selectedDrive = ref(""),
       job = ref(null),
       selected = ref(null);
+    watch([targetPath,drives],()=>{
+      const path=targetPath.value.replaceAll('/','\\').toUpperCase();
+      selectedDrive.value=drives.value.find(drive=>path.startsWith(drive.path.toUpperCase()))?.path||'';
+    });
     const notice = ref(""),
       error = ref(""),
       starting = ref(false),
       cancelBusy = ref(false),
       revealBusy = ref(null);
+    const inspectedPath = ref(null);
+    const latestBusy = ref(false);
+    async function inspectItem(item) {
+      if(!item.relativePath){
+        inspectedPath.value=null;
+        await Vue.nextTick();
+        document.querySelector('.table-scroll')?.scrollIntoView({behavior:'smooth',block:'start'});
+        return;
+      }
+      const parent = item.relativePath.includes('/') ? item.relativePath.slice(0,item.relativePath.lastIndexOf('/')) : '';
+      await navigate(parent);
+      if(pages[parent]?.loading){notice.value='รายการกำลังโหลด กรุณาลองเลือกอีกครั้ง';return;}
+      while (pages[parent]?.hasMore && !pages[parent].items.some(x=>x.relativePath===item.relativePath)) {
+        const offset=pages[parent].offset;
+        await loadChildren(parent);
+        if(pages[parent]?.error||pages[parent].offset===offset)break;
+      }
+      inspectedPath.value = item.relativePath;
+      await Vue.nextTick();
+      const row=[...document.querySelectorAll('tr[data-path]')].find(x=>x.dataset.path===item.relativePath);
+      row?.scrollIntoView({behavior:'smooth',block:'center'});
+    }
     const scenario = ref("partial"),
       resumeId = ref(""),
       history = ref([]);
@@ -124,6 +150,10 @@ createApp({
       error: "",
     });
     const issuesOpen = ref(false);
+    function issueReason(issue) {
+      const reasons={symlink:'ไม่เดินตามลิงก์ เพื่อป้องกันการอ่านวนกลับ',directory_loop:'โฟลเดอร์นี้เคยอ่านแล้ว จึงข้ามเพื่อไม่อ่านวน',special_file:'รายการนี้ไม่ใช่ไฟล์หรือโฟลเดอร์ปกติ',ALLOCATED_SIZE_UNKNOWN:'Windows อ่านพื้นที่บนดิสก์ของไฟล์นี้ไม่ได้'};
+      return reasons[issue.code]||issue.message;
+    }
     let issueEpoch = 0;
     function resetIssues() {
       issueEpoch++;
@@ -164,7 +194,7 @@ createApp({
             ),
           )
         )
-          throw new Error("รายละเอียดปัญหาไม่ตรง CONTRACT");
+          throw new Error("อ่านรายละเอียดปัญหาจากเซิร์ฟเวอร์ไม่ได้");
         issues.items.push(...result.items);
         issues.offset += result.items.length;
         issues.totalIssues = result.totalIssues;
@@ -258,7 +288,7 @@ createApp({
         result.elapsedSeconds < 0 ||
         typeof result.partial !== "boolean"
       ) {
-        throw new Error("สถานะหรือจำนวนรายการไม่ตรง CONTRACT");
+        throw new Error("สถานะหรือจำนวนรายการจากเซิร์ฟเวอร์ไม่ถูกต้อง");
       }
     }
     function validatePage(result, parent, offset) {
@@ -275,7 +305,7 @@ createApp({
         (result.hasMore && !result.items.length)
       )
         throw new Error(
-          "ข้อมูลรายการลูกไม่ตรง CONTRACT (parent / offset / limit / hasMore)",
+          "รายการจากเซิร์ฟเวอร์ไม่ครบหรือแบ่งหน้าไม่ถูกต้อง",
         );
       const folder = result.folder;
       if (
@@ -285,7 +315,7 @@ createApp({
         typeof folder.partial !== "boolean" ||
         typeof folder.hasChildren !== "boolean"
       )
-        throw new Error("ข้อมูลโฟลเดอร์ไม่ตรง CONTRACT");
+        throw new Error("ข้อมูลโฟลเดอร์จากเซิร์ฟเวอร์ไม่ถูกต้อง");
       for (const item of [folder, ...result.items]) {
         if (
           typeof item.relativePath !== "string" ||
@@ -389,6 +419,13 @@ createApp({
       ];
       resetPages();
       await Promise.all(paths.map((path) => loadChildren(path)));
+      // A fast scan can start before the root's folders have arrived.
+      // Discover them again after final results, for both the tree and the city.
+      const folders=pages['']?.items.filter(item=>item.kind==='directory')||[];
+      await Promise.all(folders.map(async node=>{
+        if(!(node.relativePath in expanded))expanded[node.relativePath]=true;
+        if(!pages[node.relativePath]?.loaded)await loadChildren(node.relativePath);
+      }));
       selected.value = findNode(selectedPath.value);
     }
     async function refreshStatus() {
@@ -405,6 +442,9 @@ createApp({
           job.value.skippedCount !== result.skippedCount;
         job.value = result;
         error.value = "";
+        if(ACTIVE_STATES.has(result.state)&&pages['']?.loaded&&!pages[''].items.length&&result.directoryCount>1){
+          await loadChildren('',true);
+        }
         if (
           issuesChanged ||
           (ACTIVE_STATES.has(previous) && !ACTIVE_STATES.has(result.state))
@@ -418,7 +458,7 @@ createApp({
           saveHistory();
           notice.value =
             result.state === "completed"
-              ? "สแกนเสร็จแล้ว โหลดรายการตามลำดับสุดท้ายใหม่แล้ว"
+              ? "สแกนเสร็จแล้ว"
               : `งาน${STATES[result.state]} — ตรวจข้อมูลและรายละเอียดด้านล่าง`;
         }
       } catch (err) {
@@ -442,7 +482,7 @@ createApp({
         api.setScenario?.(scenario.value);
         const result = await api.start(targetPath.value.trim());
         if (typeof result.id !== "string" || !STATES[result.state])
-          throw new Error("คำตอบเริ่มงานไม่ตรง CONTRACT");
+          throw new Error("เซิร์ฟเวอร์ไม่ยืนยันการเริ่มสแกน");
         stopPoll();
         resetPages();
         resetIssues();
@@ -457,7 +497,7 @@ createApp({
           elapsedSeconds: 0,
         };
         selected.value = root.value;
-        notice.value = "รับงานแล้ว กำลังติดตามสถานะ";
+        notice.value = "กำลังสแกน";
         saveHistory();
         await initialTree();
         await refreshStatus();
@@ -476,9 +516,9 @@ createApp({
       try {
         const result = await api.cancel(job.value.id);
         if (result.state !== "cancelling" && result.state !== "cancelled")
-          throw new Error("สถานะยกเลิกไม่ตรง CONTRACT");
+          throw new Error("เซิร์ฟเวอร์ไม่ยืนยันการยกเลิก");
         job.value.state = "cancelling";
-        notice.value = "ส่งคำขอยกเลิกแล้ว รอสถานะจาก scanner";
+        notice.value = "กำลังรอให้การสแกนหยุด";
         await refreshStatus();
       } catch (err) {
         await refreshStatus();
@@ -498,7 +538,7 @@ createApp({
           throw new Error("ไม่ได้รับคำยืนยันจาก Explorer");
         notice.value = mock
           ? "จำลอง Reveal สำเร็จ — โหมดนี้ไม่ได้เปิด Explorer จริง"
-          : "เซิร์ฟเวอร์ยืนยันการเปิด Explorer แล้ว";
+          : "ส่งคำสั่งเปิดตำแหน่งใน Explorer แล้ว";
       } catch (err) {
         notice.value = "";
         error.value = `เปิดตำแหน่งไม่ได้: ${err.message}`;
@@ -523,13 +563,25 @@ createApp({
         await initialTree();
         if (issuesOpen.value) await loadIssues();
         saveHistory();
-        notice.value = "เปิดผลที่เก็บไว้แล้ว — ผลนี้ไม่ใช่การสแกนใหม่";
+        notice.value = "เปิดผลที่บันทึกไว้แล้ว";
         if (active.value) timer = setTimeout(refreshStatus, 2000);
       } catch (err) {
         error.value = `เปิดผลเดิมไม่ได้: ${err.message}`;
       } finally {
         starting.value = false;
       }
+    }
+    async function resumeLatest() {
+      if(active.value||starting.value||latestBusy.value||!targetPath.value.trim())return;
+      error.value='';
+      latestBusy.value=true;
+      const path=targetPath.value.trim();
+      try {
+        const result=await api.latest(path);
+        validateStatus(result,result.id);
+        if(targetPath.value.trim()===path&&!active.value&&!starting.value)await resume(result.id);
+      } catch(err) { error.value=`เปิดผลล่าสุดไม่ได้: ${err.message}`; }
+      finally {latestBusy.value=false;}
     }
     function clearHistory() {
       history.value = [];
@@ -538,7 +590,7 @@ createApp({
       } catch {
         /* optional */
       }
-      notice.value = "ล้างประวัติในเบราว์เซอร์แล้ว ฐานข้อมูลและไฟล์จริงยังอยู่";
+      notice.value = "ล้างประวัติแล้ว ผลสแกนและไฟล์ยังอยู่";
     }
     function changeDrive() {
       targetPath.value = selectedDrive.value;
@@ -565,6 +617,10 @@ createApp({
         }
         await loadDrives();
         if (mock) await startScan();
+        else {
+          const scanId=new URLSearchParams(location.search).get('scan');
+          if(scanId){resumeId.value=scanId;await resume(scanId);}
+        }
       } catch (err) {
         error.value = err.message;
       }
@@ -576,6 +632,11 @@ createApp({
     });
     return {
       mock,
+      pages,
+      inspectedPath,
+      inspectItem,
+      resumeLatest,
+      latestBusy,
       apiReady,
       drives,
       driveError,
@@ -602,6 +663,7 @@ createApp({
       formatShare,
       issues,
       issuesOpen,
+      issueReason,
       loadIssues,
       toggleIssues,
       treeView,
