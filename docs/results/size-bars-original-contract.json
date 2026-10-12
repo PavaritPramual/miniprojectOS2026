@@ -1,0 +1,230 @@
+{
+  "scope": "Intercepted HTTP fixtures; NOT real C/WSL integration",
+  "results": [
+    {
+      "name": "POST path, async status and bounded children requests",
+      "result": "PASS"
+    },
+    {
+      "name": "Failed next page preserves existing rows; retry loads once",
+      "result": "PASS"
+    },
+    {
+      "name": "Slow response for A does not replace selected B",
+      "result": "PASS"
+    },
+    {
+      "name": "Status error retains UI; retry recovers",
+      "result": "PASS"
+    },
+    {
+      "name": "Cancel HTTP error remains visible",
+      "result": "PASS"
+    },
+    {
+      "name": "Terminal reordering resets previous pagination",
+      "result": "PASS"
+    },
+    {
+      "name": "Reveal sends scanId + relativePath and honors HTTP error",
+      "result": "PASS"
+    },
+    {
+      "name": "Next job does not keep old folder rows; successful cancellation",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "path": "/api/drives",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans",
+      "query": "",
+      "method": "POST",
+      "body": {
+        "path": "D:\\demo"
+      }
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=A&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=B&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=&offset=50&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=&offset=50&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=A%2Fdeeper&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/cancel",
+      "query": "",
+      "method": "POST",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=A&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=B&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-1/children",
+      "query": "?parent=&offset=50&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/reveal",
+      "query": "",
+      "method": "POST",
+      "body": {
+        "scanId": "http-1",
+        "relativePath": "file-57.txt"
+      }
+    },
+    {
+      "path": "/api/reveal",
+      "query": "",
+      "method": "POST",
+      "body": {
+        "scanId": "http-1",
+        "relativePath": "file-57.txt"
+      }
+    },
+    {
+      "path": "/api/scans",
+      "query": "",
+      "method": "POST",
+      "body": {
+        "path": "D:\\demo"
+      }
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=A&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=B&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/cancel",
+      "query": "",
+      "method": "POST",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2",
+      "query": "",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=A&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "path": "/api/scans/http-2/children",
+      "query": "?parent=B&offset=0&limit=50",
+      "method": "GET",
+      "body": null
+    }
+  ]
+}

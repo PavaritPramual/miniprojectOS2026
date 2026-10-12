@@ -21,7 +21,7 @@ const path = require("node:path");
       throw Error(diagnostics);
     }),
   ]);
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, ...(process.env.CORESPACE_BROWSER_CHANNEL ? { channel: process.env.CORESPACE_BROWSER_CHANNEL } : {}) });
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
@@ -250,7 +250,7 @@ const path = require("node:path");
         .every((url) => new URL(url).searchParams.get("limit") === "50"),
     );
     await page.screenshot({
-      path: path.join(__dirname, "../docs/ui-evidence/review-failed.png"),
+      path: path.join(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, "../docs/ui-evidence"), "review-failed.png"),
       fullPage: true,
     });
   } catch (e) {
@@ -259,7 +259,7 @@ const path = require("node:path");
     process.exitCode = 1;
   } finally {
     fs.writeFileSync(
-      path.join(__dirname, "../docs/ui-evidence/review-results.json"),
+      path.join(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, "../docs/ui-evidence"), "review-results.json"),
       JSON.stringify(
         {
           scope:

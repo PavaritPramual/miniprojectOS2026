@@ -8,6 +8,7 @@
     <script defer src="/static/vendor/vue-3.5.13.global.prod.js"></script>
     <script defer src="/static/api.js"></script>
     <script defer src="/static/mock-api.js"></script>
+    <script defer src="/static/size-bars.js"></script>
     <script defer src="/static/app.js"></script>
   </head>
   <body>
@@ -209,6 +210,33 @@
                 >
               </div>
             </div>
+            <section class="size-chart" aria-labelledby="size-chart-title">
+              <div class="chart-heading">
+                <h3 id="size-chart-title">ไฟล์และโฟลเดอร์ไหนใช้พื้นที่มาก</h3>
+                <span class="small muted">Allocated Size</span>
+              </div>
+              <p class="chart-scope small muted">
+                {{ active ? 'ขณะสแกน: เปรียบเทียบเฉพาะรายการที่รับแล้ว' : 'เปรียบเทียบขนาดที่อ่านได้ของรายการลูกในโฟลเดอร์นี้' }}
+                · แสดง {{ sizeBars.rows.length }} จาก {{ currentItems.length }} รายการที่โหลดแล้ว (สูงสุด 10 รายการ)
+              </p>
+              <p v-if="currentPage?.error" class="small error">โหลดข้อมูลกราฟไม่สำเร็จ กรุณาลองโหลดรายการใหม่ด้านล่าง</p>
+              <p v-else-if="currentPage?.loading && !currentItems.length" role="status" class="small muted">กำลังโหลดข้อมูลกราฟ…</p>
+              <ol v-else-if="sizeBars.rows.length" class="bar-list">
+                <li v-for="row in sizeBars.rows" :key="row.item.relativePath" class="bar-row">
+                  <div class="bar-label">
+                    <button v-if="row.item.kind === 'directory'" class="folder-link" :title="row.item.name" @click="select(row.item)">▱ {{ row.item.name }}</button>
+                    <span v-else :title="row.item.name">{{ row.item.name }}</span>
+                    <span class="bar-value">{{ formatBytes(row.item.allocatedBytes) }}<small v-if="row.share !== null"> · {{ formatShare(row.share) }} ของยอดโฟลเดอร์ที่อ่านได้</small></span>
+                  </div>
+                  <div class="bar-track" aria-hidden="true"><div class="bar-fill" :class="{directory: row.item.kind === 'directory'}" :style="{width: row.width + '%'}"></div></div>
+                  <span v-if="row.item.partial" class="small muted">ผลบางส่วน</span>
+                </li>
+              </ol>
+              <p v-else class="small muted">{{ active ? 'รอขนาดที่วัดได้จากการสแกน' : sizeBars.unknownCount ? 'ยังไม่มีรายการที่วัดพื้นที่ได้' : 'โฟลเดอร์นี้ไม่มีรายการสำหรับแสดงกราฟ' }}</p>
+              <p v-if="sizeBars.unknownCount" class="small muted">ไม่ทราบขนาด {{ sizeBars.unknownCount }} รายการที่โหลดแล้ว — ดูรายละเอียดในตาราง ไม่แทนด้วย 0 B</p>
+              <p v-if="sizeBars.rows.length" class="chart-note small muted">ความยาวแท่งเทียบกับรายการที่ใหญ่ที่สุดในกราฟ · สีน้ำเงินคือไฟล์ สีเขียวคือโฟลเดอร์ (กดชื่อเพื่อเปิด)</p>
+              <p v-if="selectedFolder?.partial || active" class="small muted">{{ active ? 'ขนาดและอันดับยังเปลี่ยนได้ระหว่างสแกน' : 'ผลบางส่วน: กราฟแสดงเฉพาะขนาดที่อ่านได้ ไม่ใช่พื้นที่ทั้งหมดจริง' }}</p>
+            </section>
             <div class="table-tools">
               <p>
                 แสดง <strong>{{ currentItems.length }}</strong> จาก {{

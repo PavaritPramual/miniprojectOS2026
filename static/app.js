@@ -108,6 +108,12 @@ createApp({
     const selectedFolder = computed(
       () => currentPage.value?.folder || selected.value,
     );
+    const sizeBars = computed(() => CoreSpaceSizeBars.buildSizeBars(currentItems.value, selectedFolder.value?.allocatedBytes));
+    function formatShare(share) {
+      if (share === null) return "";
+      if (share > 0 && share < 0.1) return "<0.1%";
+      return `${new Intl.NumberFormat("th-TH", { maximumFractionDigits: 1 }).format(share)}%`;
+    }
     const issues = reactive({
       items: [],
       offset: 0,
@@ -592,6 +598,8 @@ createApp({
       currentItems,
       breadcrumbs,
       selectedFolder,
+      sizeBars,
+      formatShare,
       issues,
       issuesOpen,
       loadIssues,

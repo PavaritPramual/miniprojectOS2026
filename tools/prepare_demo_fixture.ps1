@@ -1,6 +1,7 @@
 ﻿param(
     [string]$Target = (Join-Path $PSScriptRoot '..\fixtures\generated\demo'),
-    [switch]$IncludeJunction
+    [switch]$IncludeJunction,
+    [switch]$VariedSizes
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,7 +30,11 @@ for ($level = 1; $level -le 8; $level++) {
 
 for ($number = 1; $number -le 60; $number++) {
     $file = Join-Path $many ('child-{0:D3}.txt' -f $number)
-    [System.IO.File]::WriteAllText($file, 'x', $utf8)
+    if ($VariedSizes) {
+        [System.IO.File]::WriteAllBytes($file, (New-Object byte[] ($number * 1024)))
+    } else {
+        [System.IO.File]::WriteAllText($file, 'x', $utf8)
+    }
 }
 
 [System.IO.File]::WriteAllText((Join-Path $thai 'รายงาน 1.txt'), 'hello', $utf8)
@@ -54,4 +59,5 @@ if ($IncludeJunction) {
     ManyChildren = @(Get-ChildItem -LiteralPath $many -File).Count
     LogicalBytes = $logicalBytes
     JunctionIncluded = [bool]$IncludeJunction
+    VariedSizes = [bool]$VariedSizes
 }

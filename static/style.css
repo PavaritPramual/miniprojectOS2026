@@ -455,6 +455,23 @@ footer {
 .metrics strong {
   overflow-wrap: anywhere;
 }
+.size-chart { margin: 24px 0; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.chart-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.chart-heading h3 { margin: 0; font-size: 18px; }
+.chart-scope, .chart-note { margin: 8px 0; }
+.bar-list { list-style: none; padding: 0; margin: 16px 0; }
+.bar-row { margin: 0 0 14px; }
+.bar-label { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.bar-label > :first-child { min-width: 0; overflow-wrap: anywhere; text-align: left; }
+.bar-value { flex-shrink: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.bar-value small { color: var(--muted); font-size: 11px; }
+.bar-track { height: 13px; margin-top: 5px; background: var(--tint); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--blue); }
+.bar-fill.directory { background: #397263; }
+@media (max-width: 600px) {
+  .bar-label { display: block; }
+  .bar-value { display: block; text-align: left; font-size: 13px; }
+}
 @media (max-width: 850px) {
   .workspace {
     grid-template-columns: minmax(0, 1fr);

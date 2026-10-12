@@ -1,0 +1,560 @@
+{
+  "many": {
+    "scanId": "4e9811e0b43b4b07988d546cf9686478",
+    "parent": "many",
+    "offset": 0,
+    "limit": 50,
+    "totalChildren": 60,
+    "hasMore": true,
+    "partial": false,
+    "folder": {
+      "relativePath": "many",
+      "name": "many",
+      "kind": "directory",
+      "logicalBytes": 1873920,
+      "allocatedBytes": 1873920,
+      "partial": false,
+      "hasChildren": true
+    },
+    "items": [
+      {
+        "relativePath": "many/child-060.txt",
+        "name": "child-060.txt",
+        "kind": "file",
+        "logicalBytes": 61440,
+        "allocatedBytes": 61440,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-059.txt",
+        "name": "child-059.txt",
+        "kind": "file",
+        "logicalBytes": 60416,
+        "allocatedBytes": 60416,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-058.txt",
+        "name": "child-058.txt",
+        "kind": "file",
+        "logicalBytes": 59392,
+        "allocatedBytes": 59392,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-057.txt",
+        "name": "child-057.txt",
+        "kind": "file",
+        "logicalBytes": 58368,
+        "allocatedBytes": 58368,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-056.txt",
+        "name": "child-056.txt",
+        "kind": "file",
+        "logicalBytes": 57344,
+        "allocatedBytes": 57344,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-055.txt",
+        "name": "child-055.txt",
+        "kind": "file",
+        "logicalBytes": 56320,
+        "allocatedBytes": 56320,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-054.txt",
+        "name": "child-054.txt",
+        "kind": "file",
+        "logicalBytes": 55296,
+        "allocatedBytes": 55296,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-053.txt",
+        "name": "child-053.txt",
+        "kind": "file",
+        "logicalBytes": 54272,
+        "allocatedBytes": 54272,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-052.txt",
+        "name": "child-052.txt",
+        "kind": "file",
+        "logicalBytes": 53248,
+        "allocatedBytes": 53248,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-051.txt",
+        "name": "child-051.txt",
+        "kind": "file",
+        "logicalBytes": 52224,
+        "allocatedBytes": 52224,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-050.txt",
+        "name": "child-050.txt",
+        "kind": "file",
+        "logicalBytes": 51200,
+        "allocatedBytes": 51200,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-049.txt",
+        "name": "child-049.txt",
+        "kind": "file",
+        "logicalBytes": 50176,
+        "allocatedBytes": 50176,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-048.txt",
+        "name": "child-048.txt",
+        "kind": "file",
+        "logicalBytes": 49152,
+        "allocatedBytes": 49152,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-047.txt",
+        "name": "child-047.txt",
+        "kind": "file",
+        "logicalBytes": 48128,
+        "allocatedBytes": 48128,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-046.txt",
+        "name": "child-046.txt",
+        "kind": "file",
+        "logicalBytes": 47104,
+        "allocatedBytes": 47104,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-045.txt",
+        "name": "child-045.txt",
+        "kind": "file",
+        "logicalBytes": 46080,
+        "allocatedBytes": 46080,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-044.txt",
+        "name": "child-044.txt",
+        "kind": "file",
+        "logicalBytes": 45056,
+        "allocatedBytes": 45056,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-043.txt",
+        "name": "child-043.txt",
+        "kind": "file",
+        "logicalBytes": 44032,
+        "allocatedBytes": 44032,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-042.txt",
+        "name": "child-042.txt",
+        "kind": "file",
+        "logicalBytes": 43008,
+        "allocatedBytes": 43008,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-041.txt",
+        "name": "child-041.txt",
+        "kind": "file",
+        "logicalBytes": 41984,
+        "allocatedBytes": 41984,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-040.txt",
+        "name": "child-040.txt",
+        "kind": "file",
+        "logicalBytes": 40960,
+        "allocatedBytes": 40960,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-039.txt",
+        "name": "child-039.txt",
+        "kind": "file",
+        "logicalBytes": 39936,
+        "allocatedBytes": 39936,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-038.txt",
+        "name": "child-038.txt",
+        "kind": "file",
+        "logicalBytes": 38912,
+        "allocatedBytes": 38912,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-037.txt",
+        "name": "child-037.txt",
+        "kind": "file",
+        "logicalBytes": 37888,
+        "allocatedBytes": 37888,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-036.txt",
+        "name": "child-036.txt",
+        "kind": "file",
+        "logicalBytes": 36864,
+        "allocatedBytes": 36864,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-035.txt",
+        "name": "child-035.txt",
+        "kind": "file",
+        "logicalBytes": 35840,
+        "allocatedBytes": 35840,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-034.txt",
+        "name": "child-034.txt",
+        "kind": "file",
+        "logicalBytes": 34816,
+        "allocatedBytes": 34816,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-033.txt",
+        "name": "child-033.txt",
+        "kind": "file",
+        "logicalBytes": 33792,
+        "allocatedBytes": 33792,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-032.txt",
+        "name": "child-032.txt",
+        "kind": "file",
+        "logicalBytes": 32768,
+        "allocatedBytes": 32768,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-031.txt",
+        "name": "child-031.txt",
+        "kind": "file",
+        "logicalBytes": 31744,
+        "allocatedBytes": 31744,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-030.txt",
+        "name": "child-030.txt",
+        "kind": "file",
+        "logicalBytes": 30720,
+        "allocatedBytes": 30720,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-029.txt",
+        "name": "child-029.txt",
+        "kind": "file",
+        "logicalBytes": 29696,
+        "allocatedBytes": 29696,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-028.txt",
+        "name": "child-028.txt",
+        "kind": "file",
+        "logicalBytes": 28672,
+        "allocatedBytes": 28672,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-027.txt",
+        "name": "child-027.txt",
+        "kind": "file",
+        "logicalBytes": 27648,
+        "allocatedBytes": 27648,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-026.txt",
+        "name": "child-026.txt",
+        "kind": "file",
+        "logicalBytes": 26624,
+        "allocatedBytes": 26624,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-025.txt",
+        "name": "child-025.txt",
+        "kind": "file",
+        "logicalBytes": 25600,
+        "allocatedBytes": 25600,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-024.txt",
+        "name": "child-024.txt",
+        "kind": "file",
+        "logicalBytes": 24576,
+        "allocatedBytes": 24576,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-023.txt",
+        "name": "child-023.txt",
+        "kind": "file",
+        "logicalBytes": 23552,
+        "allocatedBytes": 23552,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-022.txt",
+        "name": "child-022.txt",
+        "kind": "file",
+        "logicalBytes": 22528,
+        "allocatedBytes": 22528,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-021.txt",
+        "name": "child-021.txt",
+        "kind": "file",
+        "logicalBytes": 21504,
+        "allocatedBytes": 21504,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-020.txt",
+        "name": "child-020.txt",
+        "kind": "file",
+        "logicalBytes": 20480,
+        "allocatedBytes": 20480,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-019.txt",
+        "name": "child-019.txt",
+        "kind": "file",
+        "logicalBytes": 19456,
+        "allocatedBytes": 19456,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-018.txt",
+        "name": "child-018.txt",
+        "kind": "file",
+        "logicalBytes": 18432,
+        "allocatedBytes": 18432,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-017.txt",
+        "name": "child-017.txt",
+        "kind": "file",
+        "logicalBytes": 17408,
+        "allocatedBytes": 17408,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-016.txt",
+        "name": "child-016.txt",
+        "kind": "file",
+        "logicalBytes": 16384,
+        "allocatedBytes": 16384,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-015.txt",
+        "name": "child-015.txt",
+        "kind": "file",
+        "logicalBytes": 15360,
+        "allocatedBytes": 15360,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-014.txt",
+        "name": "child-014.txt",
+        "kind": "file",
+        "logicalBytes": 14336,
+        "allocatedBytes": 14336,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-013.txt",
+        "name": "child-013.txt",
+        "kind": "file",
+        "logicalBytes": 13312,
+        "allocatedBytes": 13312,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-012.txt",
+        "name": "child-012.txt",
+        "kind": "file",
+        "logicalBytes": 12288,
+        "allocatedBytes": 12288,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "many/child-011.txt",
+        "name": "child-011.txt",
+        "kind": "file",
+        "logicalBytes": 11264,
+        "allocatedBytes": 11264,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  },
+  "status": {
+    "id": "4e9811e0b43b4b07988d546cf9686478",
+    "rootPath": "D:\\673380278-9\\2569\\OS\\project\\fixtures\\generated\\size-bars-demo",
+    "source": "wsl",
+    "isSample": false,
+    "state": "completed",
+    "fileCount": 64,
+    "directoryCount": 13,
+    "errorCount": 0,
+    "skippedCount": 0,
+    "elapsedSeconds": 2.7,
+    "partial": false,
+    "error": null
+  },
+  "root": {
+    "scanId": "4e9811e0b43b4b07988d546cf9686478",
+    "parent": "",
+    "offset": 0,
+    "limit": 50,
+    "totalChildren": 6,
+    "hasMore": false,
+    "partial": false,
+    "folder": {
+      "relativePath": "",
+      "name": "size-bars-demo",
+      "kind": "directory",
+      "logicalBytes": 2922505,
+      "allocatedBytes": 2922505,
+      "partial": false,
+      "hasChildren": true
+    },
+    "items": [
+      {
+        "relativePath": "many",
+        "name": "many",
+        "kind": "directory",
+        "logicalBytes": 1873920,
+        "allocatedBytes": 1873920,
+        "partial": false,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "large.bin",
+        "name": "large.bin",
+        "kind": "file",
+        "logicalBytes": 1048576,
+        "allocatedBytes": 1048576,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "ชื่อ ไทย",
+        "name": "ชื่อ ไทย",
+        "kind": "directory",
+        "logicalBytes": 5,
+        "allocatedBytes": 5,
+        "partial": false,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "depth",
+        "name": "depth",
+        "kind": "directory",
+        "logicalBytes": 4,
+        "allocatedBytes": 4,
+        "partial": false,
+        "hasChildren": true
+      },
+      {
+        "relativePath": "empty",
+        "name": "empty",
+        "kind": "directory",
+        "logicalBytes": 0,
+        "allocatedBytes": 0,
+        "partial": false,
+        "hasChildren": false
+      },
+      {
+        "relativePath": "zero.bin",
+        "name": "zero.bin",
+        "kind": "file",
+        "logicalBytes": 0,
+        "allocatedBytes": 0,
+        "partial": false,
+        "hasChildren": false
+      }
+    ]
+  }
+}
