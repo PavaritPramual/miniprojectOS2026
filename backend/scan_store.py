@@ -382,6 +382,28 @@ class ScanStore:
             "items": items,
         }
 
+    def search_entries(self, scan_id: str, query: str, offset: int, limit: int) -> Optional[Dict[str, Any]]:
+        scan = self.get_scan(scan_id)
+        if scan is None:
+            return None
+        term = query.replace('\\', '/')
+        root = scan['root_path'].replace('\\', '/').rstrip('/') + '/'
+        if term.casefold().startswith(root.casefold()):
+            term = term[len(root):]
+        pattern = '%' + term.replace('%', '\\%').replace('_', '\\_') + '%'
+        where = "scan_id=? AND relative_path<>'' AND (name LIKE ? ESCAPE '\\' OR relative_path LIKE ? ESCAPE '\\')"
+        order = 'rowid ASC' if scan['state'] in ('queued', 'running', 'cancelling') else '(allocated_bytes IS NULL), allocated_bytes DESC, relative_path'
+        with self._connect() as db:
+            db.execute('BEGIN')
+            total = db.execute(f"SELECT COUNT(*) FROM entries WHERE {where}", (scan_id, pattern, pattern)).fetchone()[0]
+            rows = db.execute(f"SELECT * FROM entries WHERE {where} ORDER BY {order} LIMIT ? OFFSET ?", (scan_id, pattern, pattern, limit, offset)).fetchall()
+        items = [{"relativePath": row['relative_path'], "name": row['name'], "kind": row['kind'],
+                  "logicalBytes": None if row['pending'] else row['logical_bytes'],
+                  "allocatedBytes": None if row['pending'] else row['allocated_bytes'],
+                  "partial": bool(row['partial']), "hasChildren": bool(row['has_children'])} for row in rows]
+        return {"scanId": scan_id, "query": query, "items": items, "total": total, "offset": offset,
+                "hasMore": offset + len(items) < total, "partial": bool(scan['partial']) or scan['state'] in ('queued', 'running', 'cancelling')}
+
     def list_issues(self, scan_id: str, offset: int, limit: int) -> Optional[Dict[str, Any]]:
         scan = self.get_scan(scan_id)
         if scan is None:
