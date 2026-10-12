@@ -74,7 +74,7 @@ readlink -f ~/.local/bin/diskviz-scan
 - ยอดโฟลเดอร์เป็นผลรวมไฟล์ที่อ่านได้ อาจนับ hard link ซ้ำ และไม่เท่าพื้นที่ใช้ทั้งหมดของไดรฟ์
 - ยังไม่ได้ยืนยันทุกกรณีสิทธิ์ NTFS หรือทดลองสแกนไดรฟ์ C ทั้งลูก
 
-ดู [ผลตรวจและภาพจริง](docs/results/REAL_SCANNER_INTEGRATION.md) งานที่เหลือของกลุ่มคือซ้อมเปิดโปรแกรม ปิดรายงานและสไลด์ และเตรียมผลทั้งไดรฟ์เพิ่มหากต้องการนำเสนอ ไม่มีงาน benchmark เปรียบเทียบกับต้นแบบ
+ดู [ผลตรวจระบบ](docs/results/REAL_SCANNER_INTEGRATION.md) และ [ผลกราฟแท่ง](docs/SIZE_BARS.md) สไลด์สำหรับอัดคลิปพร้อมแล้ว งานที่เหลือคืออัดเสียงทั้งสามคนและเดโมจริง ตัดคลิป และตรวจไฟล์ส่ง ไม่มีงาน benchmark เปรียบเทียบกับต้นแบบ
 
 กราฟแท่งเพิ่มเติมตรวจด้วย C จริงแล้ว ดู [วิธีใช้และผลตรวจกราฟ](docs/SIZE_BARS.md) หากต้องการโฟลเดอร์ที่ขนาดแตกต่างกันสำหรับเดโม ใช้ `tools/prepare_demo_fixture.ps1 -Target <ตำแหน่งใหม่> -VariedSizes` ยังได้ 64 ไฟล์/13 โฟลเดอร์ แต่ไฟล์ใน `many` มีขนาด 1–60 KiB
 
@@ -105,6 +105,7 @@ python3 -m unittest tests.test_c_scanner -v
 | หน้าที่และลำดับรวมงาน | [แผนกลุ่ม](docs/PROJECT_PLAN.md) · [แผนวันเดียว](docs/ONE_DAY_PLAN.md) |
 | เปิดระบบและผลส่วนปวริศช์ | [คู่มือ](docs/PAVARIT_HANDOFF.md) · [บันทึกรายงาน](docs/PAVARIT_REPORT_NOTES.md) |
 | เตรียมพูดและเดโม | [แผนนำเสนอ](docs/PRESENTATION_PLAN.md) · [บทเดโม](docs/THEERAMET_DEMO_SCRIPT.md) |
+| สไลด์สำหรับอัดคลิป 9 หน้า | [Canva แก้ไขได้](https://www.canva.com/d/JLRDaTpod0-yqtk) · [PPTX](docs/CoreSpace-Recording.pptx) · [PDF](docs/CoreSpace-Recording.pdf) · [ชุดส่งต่อ](docs/RECORDING_HANDOFF.md) |
 | ความรู้ OS และซ้อมตอบคำถาม | [เนื้อหา OS](docs/OS_CONCEPTS_EXPLAINED.md) · [แนวคำถาม](docs/STUDY_GUIDE.md) |
 | หน้าตาเว็บและประวัติ | [DESIGN](docs/DESIGN.md) · [CHANGELOG](docs/CHANGELOG.md) |
 
@@ -118,4 +119,4 @@ python3 -m unittest tests.test_c_scanner -v
 - **นายปวริศช์ ประมวล** · 673380278-9 — Python เชื่อมระบบและวัดพื้นที่บน Windows
 - **นายธีรเมธ สายคำ** · 673380273-9 — เว็บ สไลด์ และการสาธิต
 
-นำเสนอ **9 ตุลาคม 2569 เวลา 13:00 น.** ใช้เวลา **5–10 นาที**
+รูปแบบล่าสุดเป็น **อัดคลิปประมาณ 8 นาที** พร้อมเดโมจริง 2 นาที ยังไม่ได้ระบุกำหนดส่งใหม่
