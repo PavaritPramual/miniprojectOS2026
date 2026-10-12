@@ -26,38 +26,9 @@ function formatBytes(bytes) {
   );
   return `${new Intl.NumberFormat("th-TH", { maximumFractionDigits: 2 }).format(bytes / 1024 ** i)} ${units[i]}`;
 }
-const TreeFolder = {
-  name: "TreeFolder",
-  props: ["node", "depth", "view"],
-  computed: {
-    page() {
-      return this.view.pages[this.node.relativePath];
-    },
-    opened() {
-      return !!this.view.expanded[this.node.relativePath];
-    },
-    folders() {
-      return this.page?.items.filter((item) => item.kind === "directory") || [];
-    },
-  },
-  template: `<li>
-    <div class="tree-row" :class="{selected: view.selectedPath === node.relativePath}">
-      <button class="toggle" :aria-label="(opened ? 'พับ ' : 'กาง ') + node.name" :aria-expanded="opened" @click="view.toggle(node)">{{ opened ? '▾' : '▸' }}</button>
-      <button class="tree-name" :title="node.relativePath || node.name" @click="view.select(node)">▱ {{ node.name }}</button>
-    </div>
-    <ul v-if="opened" class="tree-children">
-      <li v-if="page?.loading" class="muted small" role="status">กำลังโหลด…</li>
-      <li v-if="page?.error" class="small error">{{ page.error }} <button @click="view.load(node.relativePath)">ลองใหม่</button></li>
-      <tree-folder v-for="child in folders" :key="child.relativePath" :node="child" :depth="depth + 1" :view="view" />
-      <li v-if="page?.loaded && !folders.length && !page.hasMore" class="muted small">ไม่มีโฟลเดอร์ย่อย</li>
-      <li v-if="page?.hasMore"><button class="more small" :disabled="page.loading" @click="view.load(node.relativePath)">แสดงเพิ่มเติมใน tree</button></li>
-    </ul>
-  </li>`,
-};
 createApp({
-  components: { TreeFolder, FileCity },
+  components: { FileCity },
   setup() {
-    const mock = new URLSearchParams(location.search).get("mock") === "1";
     const apiReady = ref(false),
       drives = ref([]),
       driveError = ref(""),
@@ -78,12 +49,14 @@ createApp({
     const inspectedPath = ref(null);
     const latestBusy = ref(false);
     async function inspectItem(item) {
+      if(cityView.value)cityView.value.query='';
       if(!item.relativePath){
         inspectedPath.value=null;
         await Vue.nextTick();
         document.querySelector('.table-scroll')?.scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
+      mode.value='list';
       const parent = item.relativePath.includes('/') ? item.relativePath.slice(0,item.relativePath.lastIndexOf('/')) : '';
       await navigate(parent);
       if(pages[parent]?.loading){notice.value='รายการกำลังโหลด กรุณาลองเลือกอีกครั้ง';return;}
@@ -97,9 +70,6 @@ createApp({
       const row=[...document.querySelectorAll('tr[data-path]')].find(x=>x.dataset.path===item.relativePath);
       row?.scrollIntoView({behavior:'smooth',block:'center'});
     }
-    const scenario = ref("partial"),
-      resumeId = ref(""),
-      history = ref([]);
     const pages = reactive(Object.create(null)),
       expanded = reactive(Object.create(null));
     let api,
@@ -134,12 +104,6 @@ createApp({
     const selectedFolder = computed(
       () => currentPage.value?.folder || selected.value,
     );
-    const sizeBars = computed(() => CoreSpaceSizeBars.buildSizeBars(currentItems.value, selectedFolder.value?.allocatedBytes));
-    function formatShare(share) {
-      if (share === null) return "";
-      if (share > 0 && share < 0.1) return "<0.1%";
-      return `${new Intl.NumberFormat("th-TH", { maximumFractionDigits: 1 }).format(share)}%`;
-    }
     const issues = reactive({
       items: [],
       offset: 0,
@@ -152,7 +116,7 @@ createApp({
     const issuesOpen = ref(false);
     function issueReason(issue) {
       const reasons={symlink:'ไม่เดินตามลิงก์ เพื่อป้องกันการอ่านวนกลับ',directory_loop:'โฟลเดอร์นี้เคยอ่านแล้ว จึงข้ามเพื่อไม่อ่านวน',special_file:'รายการนี้ไม่ใช่ไฟล์หรือโฟลเดอร์ปกติ',ALLOCATED_SIZE_UNKNOWN:'Windows อ่านพื้นที่บนดิสก์ของไฟล์นี้ไม่ได้'};
-      return reasons[issue.code]||issue.message;
+      return issue.code==='ALLOCATED_SIZE_UNKNOWN' ? issue.message : reasons[issue.code]||issue.message;
     }
     let issueEpoch = 0;
     function resetIssues() {
@@ -231,26 +195,16 @@ createApp({
       clearTimeout(timer);
       timer = null;
     }
-    const historyKey = mock
-      ? "corespace.mock.history.v1"
-      : "corespace.history.v1";
-    function saveHistory() {
-      if (!job.value) return;
-      const record = {
-        id: job.value.id,
-        rootPath: job.value.rootPath,
-        state: job.value.state,
-      };
-      history.value = [
-        record,
-        ...history.value.filter((x) => x.rootPath !== record.rootPath),
-      ].slice(0, 20);
-      try {
-        localStorage.setItem(historyKey, JSON.stringify(history.value));
-      } catch {
-        /* UI works without storage. */
-      }
+    const events=ref([]),logOpen=ref(false),mode=ref('city'),cityView=ref(null);
+    let eventId=0;
+    function recordEvent(message){
+      events.value.push({id:++eventId,time:new Date().toLocaleTimeString('th-TH',{hour12:false}),message});
+      if(events.value.length>80)events.value.shift();
+      Vue.nextTick(()=>{const log=document.querySelector('[role="log"]');if(log)log.scrollTop=log.scrollHeight;});
     }
+    async function searchEntries(query,offset=0){return api.search(job.value.id,query,offset);}
+    async function focusEntry(item){const view=mode.value;await inspectItem(item);mode.value=view;await Vue.nextTick();cityView.value?.choose(item,true);}
+    function chooseEntry(item){cityView.value?.choose(item,true);}
     async function loadDrives() {
       driveError.value = "";
       drivesLoading.value = true;
@@ -273,6 +227,7 @@ createApp({
       }
     }
     function validateStatus(result, id) {
+      if(result.isSample)throw new Error('ผลนี้เป็นข้อมูลทดสอบ กรุณาสแกนโฟลเดอร์จริง');
       const counts = [
         result.fileCount,
         result.directoryCount,
@@ -345,6 +300,7 @@ createApp({
         const result = await api.children(id, parent, offset);
         if (generation !== epoch || id !== job.value?.id) return;
         validatePage(result, parent, offset);
+        recordEvent(`โหลด ${parent||"โฟลเดอร์เริ่มต้น"} · ${result.items.length} รายการ`);
         const merged = new Map(
           page.items.map((item) => [item.relativePath, item]),
         );
@@ -437,6 +393,7 @@ createApp({
         const result = await api.status(id);
         if (id !== job.value?.id) return;
         validateStatus(result, id);
+        if(result.state!==job.value.state||result.fileCount!==job.value.fileCount||result.directoryCount!==job.value.directoryCount)recordEvent(`${STATES[result.state]} · อ่านได้ ${result.fileCount} ไฟล์ / ${result.directoryCount} โฟลเดอร์`);
         const issuesChanged =
           job.value.errorCount !== result.errorCount ||
           job.value.skippedCount !== result.skippedCount;
@@ -455,7 +412,7 @@ createApp({
         if (ACTIVE_STATES.has(previous) && !ACTIVE_STATES.has(result.state)) {
           // Final sorting can change page boundaries: invalidate all loaded pages.
           await refreshVisible();
-          saveHistory();
+
           notice.value =
             result.state === "completed"
               ? "สแกนเสร็จแล้ว"
@@ -477,9 +434,10 @@ createApp({
       }
       starting.value = true;
       error.value = "";
+      events.value=[];logOpen.value=true;
+      recordEvent(`ขอเริ่มสแกน ${targetPath.value.trim()}`);
       notice.value = "กำลังขอเริ่มสแกน…";
       try {
-        api.setScenario?.(scenario.value);
         const result = await api.start(targetPath.value.trim());
         if (typeof result.id !== "string" || !STATES[result.state])
           throw new Error("เซิร์ฟเวอร์ไม่ยืนยันการเริ่มสแกน");
@@ -498,12 +456,13 @@ createApp({
         };
         selected.value = root.value;
         notice.value = "กำลังสแกน";
-        saveHistory();
+
         await initialTree();
         await refreshStatus();
       } catch (err) {
         notice.value = "";
         error.value = err.message;
+        recordEvent(`เริ่มสแกนไม่ได้: ${err.message}`);
       } finally {
         starting.value = false;
       }
@@ -511,6 +470,7 @@ createApp({
     async function cancelScan() {
       if (!active.value || job.value.state === "cancelling" || cancelBusy.value)
         return;
+      recordEvent("ขอยกเลิกการสแกน");
       cancelBusy.value = true;
       error.value = "";
       try {
@@ -536,9 +496,7 @@ createApp({
         const result = await api.reveal(job.value.id, node.relativePath);
         if (result.status !== "revealed")
           throw new Error("ไม่ได้รับคำยืนยันจาก Explorer");
-        notice.value = mock
-          ? "จำลอง Reveal สำเร็จ — โหมดนี้ไม่ได้เปิด Explorer จริง"
-          : "ส่งคำสั่งเปิดตำแหน่งใน Explorer แล้ว";
+        notice.value = "ส่งคำสั่งเปิดตำแหน่งใน Explorer แล้ว";
       } catch (err) {
         notice.value = "";
         error.value = `เปิดตำแหน่งไม่ได้: ${err.message}`;
@@ -562,8 +520,9 @@ createApp({
         targetPath.value = result.rootPath;
         await initialTree();
         if (issuesOpen.value) await loadIssues();
-        saveHistory();
+
         notice.value = "เปิดผลที่บันทึกไว้แล้ว";
+        recordEvent(`เปิดผลจริง ${result.rootPath}`);
         if (active.value) timer = setTimeout(refreshStatus, 2000);
       } catch (err) {
         error.value = `เปิดผลเดิมไม่ได้: ${err.message}`;
@@ -583,44 +542,16 @@ createApp({
       } catch(err) { error.value=`เปิดผลล่าสุดไม่ได้: ${err.message}`; }
       finally {latestBusy.value=false;}
     }
-    function clearHistory() {
-      history.value = [];
-      try {
-        localStorage.removeItem(historyKey);
-      } catch {
-        /* optional */
-      }
-      notice.value = "ล้างประวัติแล้ว ผลสแกนและไฟล์ยังอยู่";
-    }
     function changeDrive() {
       targetPath.value = selectedDrive.value;
     }
     onMounted(async () => {
       try {
-        api = mock ? await createMockAPI() : CoreSpaceAPI.create();
+        api = CoreSpaceAPI.create();
         apiReady.value = true;
-        if (!mock) {
-          try {
-            const saved = JSON.parse(localStorage.getItem(historyKey) || "[]");
-            history.value = Array.isArray(saved)
-              ? saved
-                  .filter(
-                    (x) =>
-                      typeof x.id === "string" &&
-                      typeof x.rootPath === "string",
-                  )
-                  .slice(0, 20)
-              : [];
-          } catch {
-            history.value = [];
-          }
-        }
         await loadDrives();
-        if (mock) await startScan();
-        else {
-          const scanId=new URLSearchParams(location.search).get('scan');
-          if(scanId){resumeId.value=scanId;await resume(scanId);}
-        }
+        const scanId=new URLSearchParams(location.search).get('scan');
+        if(scanId)await resume(scanId);
       } catch (err) {
         error.value = err.message;
       }
@@ -631,7 +562,7 @@ createApp({
       issueEpoch++;
     });
     return {
-      mock,
+      events, logOpen, recordEvent, mode, cityView, searchEntries, focusEntry, chooseEntry,
       pages,
       inspectedPath,
       inspectItem,
@@ -650,17 +581,12 @@ createApp({
       starting,
       cancelBusy,
       revealBusy,
-      scenario,
-      resumeId,
-      history,
       active,
       root,
       currentPage,
       currentItems,
       breadcrumbs,
       selectedFolder,
-      sizeBars,
-      formatShare,
       issues,
       issuesOpen,
       issueReason,
@@ -674,7 +600,6 @@ createApp({
       cancelScan,
       reveal,
       resume,
-      clearHistory,
       changeDrive,
       navigate,
       select,

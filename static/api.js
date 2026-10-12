@@ -48,6 +48,7 @@
         request("/api/scans", { method: "POST", body: { path } }),
       status: (id) => request(`/api/scans/${encodeURIComponent(id)}`),
       latest: (path) => request(`/api/scans/latest?${new URLSearchParams({path})}`),
+      search: (id, query, offset=0) => request(`/api/scans/${encodeURIComponent(id)}/search?${new URLSearchParams({q:query,offset,limit:50})}`),
       children: (id, parent, offset) =>
         request(
           `/api/scans/${encodeURIComponent(id)}/children?${new URLSearchParams({ parent, offset, limit: 50 })}`,

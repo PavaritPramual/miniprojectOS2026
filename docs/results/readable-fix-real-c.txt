@@ -1,0 +1,19 @@
+test_real_drive_cancel_and_restart (tests.test_real_scanner.RealScannerTests.test_real_drive_cancel_and_restart) ... skipped 'set CORESPACE_TEST_DRIVE to opt into a real drive scan'
+test_real_files_pages_totals_and_persistence (tests.test_real_scanner.RealScannerTests.test_real_files_pages_totals_and_persistence) ... 127.0.0.1 - - [12/Oct/2026 17:08:40] "POST /api/scans HTTP/1.1" 202 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=many&offset=0&limit=50 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=many&offset=50&limit=50 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=&limit=50 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=empty HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=depth%2Flevel-01%2Flevel-02%2Flevel-03%2Flevel-04%2Flevel-05%2Flevel-06%2Flevel-07%2Flevel-08 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/children?parent=%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD+%E0%B9%84%E0%B8%97%E0%B8%A2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/e8b145ea9ca24611ab81a61bb1e79471/issues HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 17:08:45] "GET /api/scans/latest?path=D%3A%5C673380278-9%5C2569%5COS%5Cproject%5Cfixtures%5Cgenerated%5Ctest-runs%5Ctmpcnsayx8t%5Cdemo HTTP/1.1" 200 -
+ok
+test_real_junction_does_not_loop (tests.test_real_scanner.RealScannerTests.test_real_junction_does_not_loop) ... 127.0.0.1 - - [12/Oct/2026 17:08:46] "POST /api/scans HTTP/1.1" 202 -
+127.0.0.1 - - [12/Oct/2026 17:08:46] "GET /api/scans/fe211381a529410e9a8167d65e0ddc51/issues HTTP/1.1" 200 -
+ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 7.866s
+
+OK (skipped=1)

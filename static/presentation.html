@@ -10,18 +10,17 @@
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-2.png" alt="โปรแกรมช่วยหาโฟลเดอร์
-ที่ใช้พื้นที่มาก" width="1600" height="900"><details><summary>บทพูดหน้า 2</summary><p>OS ช่วยให้เรารู้ว่าโฟลเดอร์ใดใช้พื้นที่มาก
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-2.png" alt="สำรวจพื้นที่ไฟล์เป็นเมือง" width="1600" height="900"><details><summary>บทพูดหน้า 2</summary><p>OS ช่วยให้เรารู้ว่าไฟล์ใดใช้พื้นที่มาก
 
 **ธีรเมธ · 40 วินาที**
 
-เมื่อมีไฟล์กระจายหลายโฟลเดอร์ เราอาจไม่รู้ว่าอะไรใช้พื้นที่มาก งานนี้ให้เลือกโฟลเดอร์แล้วดูโครงสร้างและขนาดได้ครับ ตัวข้อมูลมาจากระบบปฏิบัติการ กราฟแท่งเปรียบเทียบขนาด Allocated สีเขียวคือโฟลเดอร์ สีน้ำเงินคือไฟล์ กดชื่อโฟลเดอร์เพื่อดูข้างในได้ ภาพนี้เป็นผล C และ Python จริงบน Windows แล้ว ต่อไปศรัณย์จะอธิบายว่าเราอ่านข้อมูลนั้นได้อย่างไรครับ
+เมื่อไฟล์กระจายหลายโฟลเดอร์ เราอาจไม่รู้ว่าอะไรใช้พื้นที่มาก CoreSpace แปลงข้อมูลที่ OS อ่านได้เป็นเมืองไฟล์ครับ พื้นที่ฐานอาคารใช้เทียบสัดส่วนขนาดในมุมมองนี้ เลือกอาคารแล้วชื่อและขนาดค้างอยู่ด้านข้าง ถ้าไฟล์เล็กจนหาไม่เจอ สามารถค้นจากผลสแกนทั้งหมดได้ ภาพนี้มาจาก C และ Python อ่านไฟล์จริงในโปรเจกต์บน Windows ต่อไปศรัณย์จะอธิบายว่าเราอ่านข้อมูลนั้นได้อย่างไรครับ
 
-ชี้กราฟจริงว่า many ประมาณ 64.1% และ large.bin ประมาณ 35.9% ของยอดโฟลเดอร์ที่อ่านได้ ความยาวแท่งเทียบกับรายการใหญ่ที่สุด ไม่ใช่เปอร์เซ็นต์ความจุไดรฟ์ ไม่แจกแจงทุกปุ่ม
+ชี้พื้นที่ฐาน ไม่ใช้ความสูงอาคารเป็นสเกลไบต์โดยตรง เพราะความสูงใช้ log หน้าต่างเป็นการตกแต่ง ไม่ใช่จำนวนไฟล์ สีใช้ช่วยแยกประเภทตามนามสกุล ดูชื่อประกอบได้ รายการที่เป็นศูนย์หรือไม่ทราบขนาดยังแสดงในส่วนแยก ไม่สมมติพื้นที่ให้มัน
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-3.png" alt="รู้ขนาดไฟล์ได้จาก metadata" width="1600" height="900"><details><summary>บทพูดหน้า 3</summary><p>อ่านขนาดไฟล์ได้โดยไม่ต้องอ่านเนื้อหาทั้งไฟล์
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-3.png" alt="รู้ขนาดไฟล์ได้จาก metadata" width="1600" height="900"><details><summary>บทพูดหน้า 3</summary><p>อ่านขนาดไฟล์ได้โดยไม่ต้องอ่านเนื้อหาทั้งไฟล์
 
 **ศรัณย์ · 60 วินาที**
 
@@ -31,7 +30,7 @@
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-4.png" alt="C อ่านโฟลเดอร์ผ่าน POSIX API" width="1600" height="900"><details><summary>บทพูดหน้า 4</summary><p>โปรแกรม C ขอข้อมูลไฟล์ผ่าน POSIX API
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-4.png" alt="C อ่านโฟลเดอร์ผ่าน POSIX API" width="1600" height="900"><details><summary>บทพูดหน้า 4</summary><p>โปรแกรม C ขอข้อมูลไฟล์ผ่าน POSIX API
 
 **ศรัณย์ · 70 วินาที**
 
@@ -43,7 +42,7 @@
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-5.png" alt="Python และ C ส่งข้อมูลผ่าน pipe" width="1600" height="900"><details><summary>บทพูดหน้า 5</summary><p>Python กับ C เป็นคนละ process และส่งข้อมูลผ่าน pipe
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-5.png" alt="Python และ C ส่งข้อมูลผ่าน pipe" width="1600" height="900"><details><summary>บทพูดหน้า 5</summary><p>Python กับ C เป็นคนละ process และส่งข้อมูลผ่าน pipe
 
 **ปวริศช์ · 70 วินาที**
 
@@ -55,7 +54,7 @@
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-6.png" alt="Logical และ Allocated วัดคนละสิ่ง" width="1600" height="900"><details><summary>บทพูดหน้า 6</summary><p>ขนาดเนื้อหากับพื้นที่ที่ใช้บนดิสก์อาจต่างกัน
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-6.png" alt="Logical และ Allocated วัดคนละสิ่ง" width="1600" height="900"><details><summary>บทพูดหน้า 6</summary><p>ขนาดเนื้อหากับพื้นที่ที่ใช้บนดิสก์อาจต่างกัน
 
 **ปวริศช์ · 60 วินาที**
 
@@ -67,42 +66,39 @@ Logical คือขนาดเนื้อหาจาก metadata ที่ C
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-7.png" alt="เดโมระบบจริง" width="1600" height="900"><details><summary>บทพูดหน้า 7</summary><p>เดโมจริง 2 นาที
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-7.png" alt="เดโมระบบจริง" width="1600" height="900"><details><summary>บทพูดหน้า 7</summary><p>เดโมจริง 2 นาที
 
 **ธีรเมธ · 120 วินาที**
 
-เปิดเว็บปกติที่ `http://127.0.0.1:8080` ไม่ใช้ `/?mock=1` ก่อนอัดต้องเปิดเซิร์ฟเวอร์และตั้ง C แล้ว ใช้ fixture ที่สร้างด้วย `tools/prepare_demo_fixture.ps1 -Target &lt;โฟลเดอร์ใหม่&gt; -VariedSizes` เตรียมอีกชุดด้วย `-IncludeJunction` และสแกนเก็บไว้ก่อน อัดเฉพาะหน้าต่างเว็บพร้อมเสียงอธิบาย
+เปิดเว็บปกติ `http://127.0.0.1:8080` ตั้ง C ใน WSL ก่อนอัด ใช้โฟลเดอร์ไฟล์จริงที่เตรียมด้วย `prepare_demo_fixture.ps1 -VariedSizes` และเตรียมผลที่มี junction ไว้ก่อน อัดเฉพาะเว็บพร้อมเสียง
 
-| เวลา | สิ่งที่ทำ | คำอธิบาย OS ที่พูด |
+| เวลา | สิ่งที่ทำ | คำอธิบาย OS |
 | --- | --- | --- |
-| 00:00–00:30 | เลือก fixture ปกติแล้วกด Scan ดูจำนวนและสถานะ | Python เริ่ม process C และเว็บติดตามงานเบื้องหลัง ขนาดยังไม่ทราบจนได้รับข้อมูล |
-| 00:30–01:00 | ชี้กราฟ many กับ large.bin กดโฟลเดอร์จากกราฟ ดูกราฟลูก แล้วแสดงเพิ่มเติมจาก 50 จนได้ 60 กาง tree สั้น ๆ | ขนาดมาจาก metadata/Windows API กราฟใช้รายการที่โหลดแล้ว เว็บไม่ต้องโหลดทั้งไดรฟ์ |
-| 01:00–01:25 | กลับ root ดู zero.bin กับ large.bin และกด Reveal หนึ่งครั้ง | แยก metadata/ขนาดสองค่า และการเปิดตำแหน่งจากผลสแกน |
-| 01:25–02:00 | เปิดผล fixture junction จริงที่เตรียมไว้ แล้วเปิด “ดูเหตุผลที่ข้อมูลไม่ครบ” | OS มีรายการชนิดลิงก์ โปรแกรมข้าม back-to-root ไม่เดินวน และแสดง partial อย่างตรงไปตรงมา |
+| 00:00–00:25 | Scan แล้วเปิดบันทึกการทำงาน ดูจำนวนรายการ | Python เริ่ม process C รับข้อมูลผ่าน pipe และเว็บติดตามงานเบื้องหลัง |
+| 00:25–00:50 | เข้า many เลือกอาคารหรือป้ายชื่อ ดูชื่อและขนาดที่ค้างอยู่ | ขนาดมาจาก metadata และ Windows API พื้นที่ฐานใช้เทียบขนาด |
+| 00:50–01:15 | ค้น child-001 เลือกผลค้นหาแล้วเปิดตำแหน่ง | ค้นจากผลที่บันทึกใน SQLite ไม่เดินไฟล์ใหม่ ไม่จำกัดเฉพาะ 50 รายการที่โหลด |
+| 01:15–01:35 | สลับรายการ โหลดเพิ่มจนเห็น 50+10 และเลือก zero.bin | เว็บขอข้อมูลทีละหน้า ศูนย์คือค่าที่วัดได้ ส่วน null คือไม่ทราบ |
+| 01:35–02:00 | เปิดผล junction จริงที่เตรียมไว้ แล้วเปิดอ่านไม่ได้/ข้าม | ไม่ตามลิงก์เพื่อป้องกันการวน ผลบางส่วนมีเหตุผล ส่วนสิทธิ์จริงต้องให้ OS อนุญาต |
 
-คำพูดปิดเดโม: เราเห็นทั้งการอ่านข้อมูลไฟล์ การส่งข้อมูลระหว่าง process และการจัดการรายการที่ไม่เดินต่อ โดยผลที่ไม่ครบจะมีเหตุผลให้ตรวจครับ
+คำพูดปิด: เราเห็นการอ่าน metadata การส่งข้อมูลระหว่าง process และการแสดงพื้นที่จากข้อมูลที่ OS คืนให้ครับ
 
-### เมื่อบันทึกเดโมมีปัญหา
-
-หากเริ่มสแกนไม่ได้ ให้แก้แล้วอัดช่วงนั้นใหม่ ไม่ใช้ mock แทนผลจริง หากผล junction ยังไม่ได้เตรียม ใช้ [ภาพเหตุผลจริง](results/real-web-issues.png) อธิบายเป็นภาพที่บันทึกไว้ได้ แต่ต้องบอกตรงว่าภาพไม่ใช่วิดีโอเดโม และหน้าเดโมยังรอไฟล์บันทึกหน้าจอจนกว่าจะอัดเสร็จ
-
-ไม่เริ่มสแกนทั้งไดรฟ์ใหม่ระหว่างเดโมหลัก การยกเลิกเป็นหัวข้อที่อธิบายจากผลทดสอบได้ หากมีเวลาและเตรียมงานจริงที่ยังทำอยู่จึงสาธิตเพิ่ม ห้ามใช้ผล cancelled เป็นผลทั้งไดรฟ์ที่สแกนจบแล้ว
+วิดีโอเดโมและคลิปสุดท้ายยังต้องอัด ภาพหน้า 7 เป็นภาพนิ่งจากผลจริง ไม่ใช่วิดีโอที่เสร็จแล้ว หากมีปัญหาให้แก้และอัดใหม่ ไม่ใช้ข้อมูลทดลองแทน ไม่เริ่มสแกนทั้งไดรฟ์ระหว่างเดโมหลัก
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-8.png" alt="ผลตรวจและข้อจำกัด" width="1600" height="900"><details><summary>บทพูดหน้า 8</summary><p>ผลที่แสดงขึ้นอยู่กับรายการที่ OS อนุญาตให้อ่านได้
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-8.png" alt="ผลตรวจและข้อจำกัด" width="1600" height="900"><details><summary>บทพูดหน้า 8</summary><p>ผลที่แสดงขึ้นอยู่กับข้อมูลที่อ่านได้
 
 **ธีรเมธ · 40 วินาที**
 
-ชุดโฟลเดอร์จริงรับครบ 64 ไฟล์และ 13 โฟลเดอร์ แบ่งรายการ 50 กับ 10 ได้ รวมทั้งชื่อไทยและความลึก 8 ชั้นครับ กราฟผ่านการตรวจ browser 7 กรณี ชุด Python ผ่าน 23 ข้อและข้าม 12 ข้อ โดย C tests 11 ข้อในนั้นรันใน Ubuntu แยกผ่านแล้ว อีกหนึ่งข้อเป็นการสแกนทั้งไดรฟ์ที่ไม่ได้เลือกเปิดในรอบนี้
+ชุดไฟล์จริงอ่านครบ 64 ไฟล์และ 13 โฟลเดอร์ รวมชื่อไทย ลึก 8 ชั้น และแบ่งลูก 60 รายการเป็น 50 กับ 10 ครับ เมืองและเว็บผ่าน 16 กรณี ชุด Python backend กับ search ล่าสุดผ่าน 20 ข้อ ส่วนชุด C จริงล่าสุดผ่าน 2 ข้อและข้าม 1 ข้อที่เป็นการสแกนทั้งไดรฟ์
 
-ข้อจำกัดคือยอดรวมอ้างเฉพาะไฟล์ที่อ่านได้ เราตรวจสแกนไดรฟ์ D และยกเลิกสำเร็จ แต่ยังไม่ได้รอจนจบทั้งไดรฟ์ และไม่ได้ยืนยันทุกกรณีสิทธิ์ NTFS ครับ
+ไฟล์บางรายการไม่มีสิทธิ์หรือถูกล็อก โปรแกรมแสดงเหตุผลและไม่ใส่ศูนย์แทนค่าที่ไม่ทราบ เราข้ามลิงก์เพื่อกันการวน และยังไม่ยืนยันครบทุกสิทธิ์ NTFS หรือผลสแกนทั้งไดรฟ์ที่จบสมบูรณ์ ยอดรวมไฟล์จึงอาจไม่เท่าพื้นที่ใช้ทั้งไดรฟ์ครับ
 
-ไม่ต้องอ่านรายชื่อเทสต์ทั้งหมด หากถูกถามเรื่องสิทธิ์ ให้แยก C tests บน Linux ออกจากสิทธิ์ NTFS บน Windows
+อ้าง [UX UAT](results/UX_CITY_UAT.md) และ [การแก้รับข้อมูล/metadata](results/READABLE_FILES_FIX.md) ตัวเลขมาจากชุดทดสอบคนละขอบเขต ไม่บวกเป็นจำนวน tests ทั้งระบบ ไม่อ้าง benchmark หรือแก้ต้นเหตุ C ส่งซ้ำสำเร็จแล้ว
 
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-9.png" alt="09 / 09   ·   ธีรเมธ   ·   5 วินาที" width="1600" height="900"><details><summary>บทพูดหน้า 9</summary><p>ขอบคุณครับ
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><article class="slide" hidden><img src="presentation-assets/slide-9.png" alt="09 / 09   ·   ธีรเมธ   ·   5 วินาที" width="1600" height="900"><details><summary>บทพูดหน้า 9</summary><p>ขอบคุณครับ
 
 **ธีรเมธ · 5 วินาที**
 
@@ -111,7 +107,7 @@ Logical คือขนาดเนื้อหาจาก metadata ที่ C
 แสดงชื่อ CoreSpace และ repository ไม่เพิ่มข้ออ้างหรือผลใหม่ในหน้าจบ
 
 
-หลักฐาน: docs/results/REAL_SCANNER_INTEGRATION.md; โค้ด: scanner/diskviz-scan.c, backend/scan_manager.py, backend/allocated_size.py</p></details></article><nav class="nav" aria-label="เลื่อนสไลด์"><button id="prev">ก่อนหน้า</button><span id="page" aria-live="polite"></span><button id="next">ถัดไป</button><a href="/">กลับเว็บ</a><a href="https://www.canva.com/d/JLRDaTpod0-yqtk" target="_blank" rel="noopener noreferrer">แก้ไขใน Canva</a></nav><script>
+หลักฐาน: docs/results/UX_CITY_UAT.md; docs/results/READABLE_FILES_FIX.md; docs/results/REAL_SCANNER_INTEGRATION.md</p></details></article><nav class="nav" aria-label="เลื่อนสไลด์"><button id="prev">ก่อนหน้า</button><span id="page" aria-live="polite"></span><button id="next">ถัดไป</button><a href="/">กลับเว็บ</a><a href="https://www.canva.com/d/C4RnAdA_35Q32Kh" target="_blank" rel="noopener noreferrer">แก้ไขใน Canva</a></nav><script>
 const slides=[...document.querySelectorAll('.slide')];let current=0;
 function show(){slides.forEach((slide,index)=>{slide.hidden=index!==current});document.querySelector('#page').textContent=`${current+1} / ${slides.length}`;document.querySelector('#prev').disabled=current===0;document.querySelector('#next').disabled=current===slides.length-1;}
 document.querySelector('#prev').onclick=()=>{current=Math.max(0,current-1);show();};document.querySelector('#next').onclick=()=>{current=Math.min(slides.length-1,current+1);show();};document.addEventListener('keydown',event=>{if(event.key==='ArrowRight'){document.querySelector('#next').click();}if(event.key==='ArrowLeft'){document.querySelector('#prev').click();}});show();

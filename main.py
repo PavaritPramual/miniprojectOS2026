@@ -156,7 +156,7 @@ class CoreSpaceRequestHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self._send_json(status)
             return
-        match = re.fullmatch(r"/api/scans/([^/]+)(?:/(children|issues))?", parsed.path)
+        match = re.fullmatch(r"/api/scans/([^/]+)(?:/(children|issues|search))?", parsed.path)
         if not match:
             self._send_api_error(404, "ENDPOINT_NOT_FOUND", "ไม่พบ endpoint นี้")
             return
@@ -188,6 +188,12 @@ class CoreSpaceRequestHandler(http.server.SimpleHTTPRequestHandler):
             if section == "children":
                 parent = query.get("parent", [""])[0]
                 result = manager.get_children(scan_id, parent, offset, limit)
+            elif section == "search":
+                term = query.get('q', [''])[0].strip()
+                if not term or len(term) > 200:
+                    self._send_api_error(400, 'INVALID_QUERY', 'กรอกคำค้น 1–200 ตัวอักษร')
+                    return
+                result = manager.store.search_entries(scan_id, term, offset, limit)
             else:
                 result = manager.get_issues(scan_id, offset, limit)
         except Exception:
@@ -350,7 +356,7 @@ def run_server():
     print("    3. นายธีรเมธ สายคำ (673380273-9)")
     print("=" * 65)
     print(f"📡  Server listening at: http://localhost:{PORT}")
-    print("    Scanner source: WSL Ubuntu (explicit sample mode available through /api/scans)")
+    print("    Scanner source: C in WSL Ubuntu")
     print("=" * 65)
 
     # Open browser automatically
