@@ -22,12 +22,12 @@
       if (!response.ok) {
         const hint =
           response.status === 404 && url.includes("/api/scans")
-            ? "Backend ยังไม่มี API งานสแกนใหม่ หรือไม่พบงานนี้ — ตรวจ CONTRACT.md กับผู้ทำ backend"
+            ? "ไม่พบผลสแกนนี้ในเครื่อง ลองสแกนโฟลเดอร์ใหม่"
             : `คำขอไม่สำเร็จ (HTTP ${response.status})`;
         throw new ApiError(data?.detail || hint, data?.code, response.status);
       }
       if (!data || typeof data !== "object")
-        throw new ApiError("Backend ส่งข้อมูลที่ไม่ใช่ JSON ตามสัญญา");
+        throw new ApiError("อ่านคำตอบจากเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่");
       return data;
     } catch (error) {
       if (error instanceof ApiError) throw error;
@@ -47,6 +47,7 @@
       start: (path) =>
         request("/api/scans", { method: "POST", body: { path } }),
       status: (id) => request(`/api/scans/${encodeURIComponent(id)}`),
+      latest: (path) => request(`/api/scans/latest?${new URLSearchParams({path})}`),
       children: (id, parent, offset) =>
         request(
           `/api/scans/${encodeURIComponent(id)}/children?${new URLSearchParams({ parent, offset, limit: 50 })}`,

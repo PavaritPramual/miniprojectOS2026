@@ -4,10 +4,11 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, ...(process.env.CORESPACE_BROWSER_CHANNEL ? { channel: process.env.CORESPACE_BROWSER_CHANNEL } : {}) });
   const page = await browser.newPage({
     viewport: { width: 1400, height: 950 },
   });
+  fs.mkdirSync(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, '../docs/ui-evidence'), {recursive:true});
   const base = process.env.CORESPACE_URL || "http://127.0.0.1:8080";
   const examples = JSON.parse(
     fs.readFileSync(path.join(__dirname, "../docs/examples/api.json"), "utf8"),
@@ -253,7 +254,7 @@ const path = require("node:path");
           .click();
         await page
           .getByRole("status")
-          .filter({ hasText: "เซิร์ฟเวอร์ยืนยัน" })
+          .filter({ hasText: "ส่งคำสั่งเปิดตำแหน่ง" })
           .waitFor();
       },
     );
@@ -286,7 +287,7 @@ const path = require("node:path");
     process.exitCode = 1;
   } finally {
     fs.writeFileSync(
-      path.resolve(__dirname, "../docs/ui-evidence/http-results.json"),
+      path.join(process.env.CORESPACE_UI_EVIDENCE || path.resolve(__dirname, "../docs/ui-evidence"), "http-results.json"),
       JSON.stringify(
         {
           scope: "Intercepted HTTP fixtures; NOT real C/WSL integration",

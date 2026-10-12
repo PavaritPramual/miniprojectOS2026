@@ -18,10 +18,12 @@ def entry(path, kind='directory', size=0):
                 logicalBytes=size, allocatedBytes=size, partial=False)
 
 
-with tempfile.TemporaryDirectory(prefix='corespace-ui-review-') as directory:
+temp_base = Path(__file__).resolve().parents[1] / 'fixtures/generated/ui-checks'
+temp_base.mkdir(parents=True, exist_ok=True)
+with tempfile.TemporaryDirectory(prefix='corespace-ui-review-', dir=temp_base) as directory:
     store = ScanStore(str(Path(directory) / 'scans.sqlite3'))
     main.SCAN_MANAGER = ScanManager(store)
-    for scan_id in ['root', 'empty', 'issues', 'failed', 'live-failed', 'live-complete']:
+    for scan_id in ['root', 'empty', 'issues', 'failed', 'live-failed', 'live-complete', 'bars', 'bars-unknown', 'bars-zero', 'city-large']:
         store.create_scan(scan_id, 'D:\\' + scan_id, 'sample', False)
         store.set_state(scan_id, 'running')
         store.add_entry(scan_id, entry(''))
@@ -32,8 +34,26 @@ with tempfile.TemporaryDirectory(prefix='corespace-ui-review-') as directory:
             for i in range(60):
                 store.add_issue(scan_id, f'secret-{i:02}.txt', 'ACCESS_DENIED' if i % 2 == 0 else 'SYMLINK_SKIPPED',
                                 f'REVIEW_REASON_{i:02}', 'error' if i % 2 == 0 else 'skipped')
+        if scan_id == 'bars':
+            for i in range(60):
+                store.add_entry(scan_id, entry(f'file-{i:02}.txt', 'file', (i + 1) * 1024))
+            store.add_entry(scan_id, entry('ชื่อ ไทย'))
+            store.add_entry(scan_id, entry('ชื่อ ไทย/child.txt', 'file', 80 * 1024))
+            store.add_entry(scan_id, entry('zero.bin', 'file', 0))
+            unknown = entry('unknown.bin', 'file', 1)
+            unknown['allocatedBytes'] = None
+            store.add_entry(scan_id, unknown)
+        if scan_id == 'bars-unknown':
+            unknown = entry('unknown.bin', 'file', 1)
+            unknown['allocatedBytes'] = None
+            store.add_entry(scan_id, unknown)
+        if scan_id == 'bars-zero':
+            store.add_entry(scan_id, entry('zero.bin', 'file', 0))
+        if scan_id == 'city-large':
+            for i in range(400):
+                store.add_entry(scan_id, entry(f'large-{i:03}.bin', 'file', (i + 1) * 1024))
         if not scan_id.startswith('live-'):
-            store.finish_scan(scan_id, 'failed' if scan_id == 'failed' else 'partial' if scan_id == 'issues' else 'completed',
+            store.finish_scan(scan_id, 'failed' if scan_id == 'failed' else 'partial' if scan_id in ['issues', 'bars', 'bars-unknown'] else 'completed',
                               'REVIEW_FAILED_SAVED' if scan_id == 'failed' else None)
     server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), main.CoreSpaceRequestHandler)
     threading.Thread(target=server.serve_forever, daemon=True).start()

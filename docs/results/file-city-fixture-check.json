@@ -1,0 +1,22 @@
+{
+  "scope": "Real HTTP/SQLite with generated records; not C/Windows size evidence",
+  "checks": [
+    {
+      "name": "400 loaded files keep 250 individual buildings and one aggregate",
+      "result": "PASS"
+    },
+    {
+      "name": "Aggregate has a true byte total and show-table works for root",
+      "result": "PASS"
+    },
+    {
+      "name": "Search finds an actual loaded file beyond the drawing limit",
+      "result": "PASS"
+    },
+    {
+      "name": "Unknown allocation stays selectable and logical size can still be mapped",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

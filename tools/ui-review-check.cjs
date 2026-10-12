@@ -21,10 +21,11 @@ const path = require("node:path");
       throw Error(diagnostics);
     }),
   ]);
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, ...(process.env.CORESPACE_BROWSER_CHANNEL ? { channel: process.env.CORESPACE_BROWSER_CHANNEL } : {}) });
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
+  fs.mkdirSync(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, '../docs/ui-evidence'), {recursive:true});
   const errors = [],
     results = [],
     requests = [];
@@ -111,11 +112,11 @@ const path = require("node:path");
         );
         assert.match(
           await page.locator(".issues").innerText(),
-          /secret-00.txt.*error \/ ACCESS_DENIED: REVIEW_REASON_00/s,
+          /secret-00.txt.*อ่านไม่ได้.*REVIEW_REASON_00.*ACCESS_DENIED/s,
         );
         assert.match(
           await page.locator(".issues").innerText(),
-          /skipped \/ SYMLINK_SKIPPED/,
+          /ข้าม.*SYMLINK_SKIPPED/,
         );
         await page.route(
           "**/issues?offset=50&limit=50",
@@ -250,16 +251,17 @@ const path = require("node:path");
         .every((url) => new URL(url).searchParams.get("limit") === "50"),
     );
     await page.screenshot({
-      path: path.join(__dirname, "../docs/ui-evidence/review-failed.png"),
+      path: path.join(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, "../docs/ui-evidence"), "review-failed.png"),
       fullPage: true,
     });
   } catch (e) {
+    console.error((await page.locator('body').innerText()).slice(-3000));
     results.push({ name: "Run stopped", result: "FAIL", detail: e.stack });
     console.error(e);
     process.exitCode = 1;
   } finally {
     fs.writeFileSync(
-      path.join(__dirname, "../docs/ui-evidence/review-results.json"),
+      path.join(process.env.CORESPACE_UI_EVIDENCE || path.join(__dirname, "../docs/ui-evidence"), "review-results.json"),
       JSON.stringify(
         {
           scope:

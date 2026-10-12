@@ -1,0 +1,34 @@
+{
+  "scope": "Real localhost Python HTTP/SQLite with fixture records; not a new C scan",
+  "checks": [
+    {
+      "name": "Top ten uses real HTTP values; chart and original table coexist",
+      "result": "PASS"
+    },
+    {
+      "name": "Loading next page preserves top ten and exposes unknown instead of zero",
+      "result": "PASS"
+    },
+    {
+      "name": "Folder bar navigates to the same folder as tree/table",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile viewport has no page-wide overflow and chart remains readable",
+      "result": "PASS"
+    },
+    {
+      "name": "Running scan shows pending sizes; terminal polling refreshes the chart",
+      "result": "PASS"
+    },
+    {
+      "name": "Empty folder and all-unknown folder have separate messages",
+      "result": "PASS"
+    },
+    {
+      "name": "Zero-byte file has text and a genuine zero-width bar",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

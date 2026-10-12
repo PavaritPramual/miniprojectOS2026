@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const {buildCity,shape}=require('../static/file-city.js');
+const file=(name,size,kind='file')=>({name,relativePath:name,kind,allocatedBytes:size,logicalBytes:size,partial:false});
+const folder=file('docs',100,'directory');
+const pages={docs:{loaded:true,items:[{...file('report.pdf',60),relativePath:'docs/report.pdf'}]}};
+const model=buildCity([folder,file('movie.mp4',200),file('zero',0),file('unknown',null)],pages);
+assert.equal(model.total,300);assert.equal(model.unplaced.length,2);assert.equal(model.districts.length,1);
+assert.equal(model.records.reduce((sum,n)=>sum+n.bytes,0),300);
+assert.equal(model.records.find(n=>n.kind==='reserve').bytes,40);
+for(let rotation=0;rotation<4;rotation++)for(const node of model.records){const projected=shape(node,rotation,false,200);assert.ok(!/NaN|Infinity/.test(projected.top+projected.left+projected.right));}
+const live=buildCity([file('docs',20,'directory')],{docs:{loaded:true,items:[{...file('late.bin',30),relativePath:'docs/late.bin'}]}});
+assert.equal(live.total,20);assert.equal(live.records.length,1);
+const large=buildCity(Array.from({length:400},(_,i)=>file(`file-${i}`,i+1)),{});
+assert.equal(large.total,80200);assert.equal(large.records.reduce((sum,n)=>sum+n.bytes,0),80200);
+assert.ok(large.records.length<=251);
+assert.equal(buildCity([file('zero',0)],{}).total,0);
+assert.equal(buildCity([file('unknown',null)],{}).records.length,0);
+const compressed={...file('packed.zip',20),logicalBytes:100};
+assert.equal(buildCity([compressed],{},'allocatedBytes').total,20);assert.equal(buildCity([compressed],{},'logicalBytes').total,100);
+console.log('PASS: folder/file totals, reserves, zero/null, live totals, 400 entries, projected coordinates');

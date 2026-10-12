@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, ...(process.env.CORESPACE_BROWSER_CHANNEL ? { channel: process.env.CORESPACE_BROWSER_CHANNEL } : {}) });
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
@@ -12,7 +12,7 @@ const path = require("node:path");
   const results = [],
     consoleErrors = [],
     external = [];
-  const evidence = path.resolve(__dirname, "../docs/ui-evidence");
+  const evidence = process.env.CORESPACE_UI_EVIDENCE || path.resolve(__dirname, "../docs/ui-evidence");
   fs.mkdirSync(evidence, { recursive: true });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
   await page.route("**/*", (route) => {
@@ -242,14 +242,14 @@ const path = require("node:path");
         .click();
       await page
         .getByRole("status")
-        .filter({ hasText: "เปิดผลที่เก็บไว้แล้ว" })
+        .filter({ hasText: "เปิดผลที่บันทึกไว้แล้ว" })
         .waitFor();
       await page
         .getByRole("button", { name: "ล้างประวัติในเบราว์เซอร์" })
         .click();
       await page
         .getByRole("status")
-        .filter({ hasText: "ล้างประวัติในเบราว์เซอร์แล้ว" })
+        .filter({ hasText: "ล้างประวัติแล้ว" })
         .waitFor();
     });
     await check("Required path / offline assets / mobile layout", async () => {
