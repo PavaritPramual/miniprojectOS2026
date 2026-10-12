@@ -76,7 +76,7 @@ readlink -f ~/.local/bin/diskviz-scan
 - ยอดโฟลเดอร์เป็นผลรวมไฟล์ที่อ่านได้ อาจนับ hard link ซ้ำ และไม่เท่าพื้นที่ใช้ทั้งหมดของไดรฟ์
 - ยังไม่ได้ยืนยันทุกกรณีสิทธิ์ NTFS หรือทดลองสแกนไดรฟ์ C ทั้งลูก
 
-ดู [ผลตรวจระบบ](docs/results/REAL_SCANNER_INTEGRATION.md) สไลด์เดิมมีภาพ UI รุ่นก่อน ต้องเปลี่ยนภาพหน้า 2 และ 7 ให้ตรงกับ UX ใหม่ก่อนอัดเสียงและเดโม ไม่มีงาน benchmark เปรียบเทียบกับต้นแบบ
+ดู [ผลตรวจระบบ](docs/results/REAL_SCANNER_INTEGRATION.md) สไลด์ Canva/PPTX/PDF และเว็บอัปเดตเป็นเมืองไฟล์แล้ว พร้อมบทพูดตาม UX ใหม่ ยังต้องอัดวิดีโอเดโมและคลิปสุดท้าย ไม่มีงาน benchmark เปรียบเทียบกับต้นแบบ
 
 เครื่องมือ `tools/prepare_demo_fixture.ps1 -Target <ตำแหน่งใหม่> -VariedSizes` มีไว้สร้างไฟล์ทดสอบภายใน เครื่องมือสแกนจะอ่านไฟล์เหล่านั้นจริง หน้าเว็บไม่มีโหมดข้อมูลสมมติ
 
@@ -109,7 +109,7 @@ python3 -m unittest tests.test_c_scanner -v
 | หน้าที่และลำดับรวมงาน | [แผนกลุ่ม](docs/PROJECT_PLAN.md) · [แผนวันเดียว](docs/ONE_DAY_PLAN.md) |
 | เปิดระบบและผลส่วนปวริศช์ | [คู่มือ](docs/PAVARIT_HANDOFF.md) · [บันทึกรายงาน](docs/PAVARIT_REPORT_NOTES.md) |
 | เตรียมพูดและเดโม | [แผนนำเสนอ](docs/PRESENTATION_PLAN.md) · [บทเดโม](docs/THEERAMET_DEMO_SCRIPT.md) |
-| สไลด์สำหรับอัดคลิป 9 หน้า | [Canva แก้ไขได้](https://www.canva.com/d/JLRDaTpod0-yqtk) · [PPTX](docs/CoreSpace-Recording.pptx) · [PDF](docs/CoreSpace-Recording.pdf) · [ชุดส่งต่อ](docs/RECORDING_HANDOFF.md) |
+| สไลด์สำหรับอัดคลิป 9 หน้า | [Canva แก้ไขได้](https://www.canva.com/d/C4RnAdA_35Q32Kh) · [PPTX](docs/CoreSpace-Recording.pptx) · [PDF](docs/CoreSpace-Recording.pdf) · [ชุดส่งต่อ](docs/RECORDING_HANDOFF.md) |
 | ความรู้ OS และซ้อมตอบคำถาม | [เนื้อหา OS](docs/OS_CONCEPTS_EXPLAINED.md) · [แนวคำถาม](docs/STUDY_GUIDE.md) |
 | หน้าตาเว็บและประวัติ | [DESIGN](docs/DESIGN.md) · [CHANGELOG](docs/CHANGELOG.md) |
 
